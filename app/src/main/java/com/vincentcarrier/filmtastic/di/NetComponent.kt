@@ -1,7 +1,7 @@
 package com.vincentcarrier.filmtastic.di
 
-import com.vincentcarrier.filmtastic.moviegridscreen.MovieGridActivity
-import com.vincentcarrier.filmtastic.moviegridscreen.MovieGridViewModel
+import com.vincentcarrier.filmtastic.ui.moviegridscreen.MovieGridActivity
+import com.vincentcarrier.filmtastic.ui.moviegridscreen.MovieGridViewModel
 import dagger.Component
 import javax.inject.Singleton
 

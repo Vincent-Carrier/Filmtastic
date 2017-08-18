@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <!--tools:context="com.vincentcarrier.filmtastic.detailsscreen.DetailsActivity>-->
+    <!--tools:contecom.vincentcarrier.filmtastic.ui.detailsscreenreen.DetailsActivity>-->
 
     <ImageView
         android:id="@+id/detailsPoster"
@@ -51,8 +51,7 @@
         android:id="@+id/voteAverage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="TextView"
-        android:textSize="20dp"
+        android:textSize="20sp"
         android:textStyle="bold"
         tools:text="8.2/10"
         android:layout_marginTop="16dp"

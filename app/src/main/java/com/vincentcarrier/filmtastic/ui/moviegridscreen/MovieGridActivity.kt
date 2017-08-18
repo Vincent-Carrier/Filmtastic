@@ -1,4 +1,4 @@
-package com.vincentcarrier.filmtastic.moviegridscreen
+package com.vincentcarrier.filmtastic.ui.moviegridscreen
 
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
@@ -9,14 +9,15 @@ import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.RecyclerView.ViewHolder
 import android.view.*
+import android.widget.ImageView
 import com.squareup.picasso.Picasso
 import com.vincentcarrier.filmtastic.R
-import com.vincentcarrier.filmtastic.detailsscreen.DetailsActivity
 import com.vincentcarrier.filmtastic.di.DaggerNetComponent
 import com.vincentcarrier.filmtastic.pojos.Movie
 import com.vincentcarrier.filmtastic.pojos.PosterWidth.XLARGE
 import com.vincentcarrier.filmtastic.pojos.SortingMethod.popular
 import com.vincentcarrier.filmtastic.pojos.SortingMethod.top_rated
+import com.vincentcarrier.filmtastic.ui.detailsscreen.DetailsActivity
 import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.activity_movie_grid.*
 import kotlinx.android.synthetic.main.movie_grid_item.view.*
@@ -29,6 +30,7 @@ class MovieGridActivity : AppCompatActivity(), AnkoLogger {
 
 	// TODO: Unsubscribe from RxJava subscriptions in OnPause, resubscribe on onResume
 	// TODO: Save and restore scroll position
+	// TODO: Implement infinite scrolling
 	// TODO: Display error message
 
 	override fun onCreate(savedInstanceState: Bundle?) {
@@ -68,7 +70,7 @@ class MovieGridActivity : AppCompatActivity(), AnkoLogger {
 					popular -> viewModel.sortingMethod = top_rated
 					else -> viewModel.sortingMethod = popular
 				}
-				item.title = getString(R.string.sorted_by) + " : " + viewModel.sortingMethod.toString()
+				item.title = "${getString(R.string.sorted_by)} : ${viewModel.sortingMethod}"
 				fetchAndBindTopMovies()
 			}
 		}
@@ -102,13 +104,11 @@ class MovieGridActivity : AppCompatActivity(), AnkoLogger {
 
 		override fun onBindViewHolder(holder: MovieAdapter.PosterViewHolder, position: Int) {
 			val movie = movies[position]
-			Picasso.with(this@MovieGridActivity)
-					.load("https://image.tmdb.org/t/p/w${XLARGE.width + movie.poster_path}")
-					.placeholder(R.drawable.poster_placeholder)
-					.into(holder.itemView.poster)
+			loadImageInto(movie, holder.itemView.poster)
 			holder.itemView.contentDescription = movie.title
-			holder.itemView.poster.setOnClickListener { view ->
-				this@MovieGridActivity.startActivity(Intent(this@MovieGridActivity, DetailsActivity::class.java).putExtra("movie", movie))
+			holder.itemView.poster.setOnClickListener {
+				this@MovieGridActivity.startActivity(
+						Intent(this@MovieGridActivity, DetailsActivity::class.java).putExtra("movie", movie))
 			}
 		}
 
@@ -116,3 +116,9 @@ class MovieGridActivity : AppCompatActivity(), AnkoLogger {
 	}
 }
 
+fun loadImageInto(movie: Movie, imageView: ImageView) {
+	Picasso.with(imageView.context)
+			.load("https://image.tmdb.org/t/p/w${XLARGE.width + movie.poster_path}")
+			.placeholder(R.drawable.poster_placeholder)
+			.into(imageView)
+}
