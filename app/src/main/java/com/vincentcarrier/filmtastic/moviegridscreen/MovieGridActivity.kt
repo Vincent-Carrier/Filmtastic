@@ -1,6 +1,7 @@
 package com.vincentcarrier.filmtastic.moviegridscreen
 
 import android.arch.lifecycle.ViewModelProviders
+import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.GridLayoutManager
@@ -9,6 +10,7 @@ import android.support.v7.widget.RecyclerView.ViewHolder
 import android.view.*
 import com.squareup.picasso.Picasso
 import com.vincentcarrier.filmtastic.R
+import com.vincentcarrier.filmtastic.detailsscreen.DetailsActivity
 import com.vincentcarrier.filmtastic.di.DaggerNetComponent
 import com.vincentcarrier.filmtastic.pojos.Movie
 import com.vincentcarrier.filmtastic.pojos.PosterWidth.XLARGE
@@ -19,6 +21,7 @@ import kotlinx.android.synthetic.main.activity_movie_grid.*
 import kotlinx.android.synthetic.main.movie_grid_item.view.*
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.debug
+
 
 class MovieGridActivity : AppCompatActivity(), AnkoLogger {
 	private lateinit var viewModel: MovieGridViewModel
@@ -96,9 +99,9 @@ class MovieGridActivity : AppCompatActivity(), AnkoLogger {
 					.placeholder(R.drawable.poster_placeholder)
 					.into(holder.itemView.poster)
 			holder.itemView.contentDescription = movie.title
-//		holder.poster?.setOnClickListener {
-//			view -> context.startActivity(Intent(context, DetailsActivity::class.java).putExtra("movie", movie))
-//		}
+			holder.itemView.poster.setOnClickListener { view ->
+				this@MovieGridActivity.startActivity(Intent(this@MovieGridActivity, DetailsActivity::class.java).putExtra("movie", movie))
+			}
 		}
 
 		override fun getItemCount(): Int = movies.size

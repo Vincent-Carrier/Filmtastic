@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <!--tools:context="com.vincentcarrier.filmtastic.detailsscreen.DetailsActivity>-->
+
+    <ImageView
+        android:id="@+id/detailsPoster"
+        android:layout_width="136dp"
+        android:layout_height="200dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:adjustViewBounds="true"
+        android:scaleType="fitXY"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_editor_absoluteY="16dp"
+        tools:ignore="ContentDescription"/>
+
+    <TextView
+        android:id="@+id/detailsTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:maxHeight="100dp"
+        android:textSize="34sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/detailsPoster"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="The Hitchhiker's Guide to the Galaxy"/>
+
+    <TextView
+        android:id="@+id/synopsis"
+        android:layout_width="0dp"
+        android:layout_height="103dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/detailsPoster"
+        tools:text="Mere seconds before the Earth is to be demolished by an alien construction crew, journeyman Arthur Dent is swept off the planet by his friend Ford Prefect, a researcher penning a new edition of &quot;The Hitchhiker's Guide to the Galaxy.&quot;"/>
+
+    <TextView
+        android:id="@+id/voteAverage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        android:textSize="20dp"
+        android:textStyle="bold"
+        tools:text="8.2/10"
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toBottomOf="@+id/detailsTitle"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginEnd="16dp"/>
+
+    <TextView
+        android:id="@+id/duration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:textStyle="italic"
+        app:layout_constraintStart_toEndOf="@+id/detailsPoster"
+        app:layout_constraintTop_toBottomOf="@+id/year"
+        tools:text="120min"/>
+
+    <TextView
+        android:id="@+id/year"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toEndOf="@+id/detailsPoster"
+        app:layout_constraintTop_toBottomOf="@+id/detailsTitle"
+        tools:text="2006"/>
+</android.support.constraint.ConstraintLayout>
