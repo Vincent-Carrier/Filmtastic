@@ -1,14 +1,10 @@
-plugins {
-    id "net.ltgt.apt" version "0.10"
-}
+//plugins {
+//    id "net.ltgt.apt" version "0.10"
+//}
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
-
-androidExtensions {
-    experimental = true
-}
 
 android {
     compileSdkVersion 26
@@ -57,6 +53,9 @@ dependencies {
     implementation 'com.squareup.retrofit2:converter-moshi:2.3.0'
     implementation 'com.squareup.okhttp3:okhttp:3.8.1'
     implementation 'com.squareup.picasso:picasso:2.5.2'
+    implementation 'nz.bradcampbell:paperparcel:2.0.2'
+    implementation 'nz.bradcampbell:paperparcel-kotlin:2.0.2'
+    kapt 'nz.bradcampbell:paperparcel-compiler:2.0.2'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.0'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.0'
