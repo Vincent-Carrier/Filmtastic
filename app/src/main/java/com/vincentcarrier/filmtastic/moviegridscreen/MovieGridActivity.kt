@@ -1,6 +1,7 @@
 package com.vincentcarrier.filmtastic.moviegridscreen
 
 import android.arch.lifecycle.ViewModelProviders
+import android.content.res.Configuration.ORIENTATION_PORTRAIT
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.GridLayoutManager
@@ -31,16 +32,23 @@ class MovieGridActivity : AppCompatActivity(), AnkoLogger {
 		super.onCreate(savedInstanceState)
 		setContentView(R.layout.activity_movie_grid)
 		DaggerNetComponent.create().inject(this)
-
-		movieGrid.apply {
-			setHasFixedSize(true); setItemViewCacheSize(20)
-			isDrawingCacheEnabled = true; drawingCacheQuality = View.DRAWING_CACHE_QUALITY_HIGH
-			layoutManager = GridLayoutManager(this@MovieGridActivity, 2)
-			adapter = MovieAdapter()
-		}
-
 		viewModel = ViewModelProviders.of(this).get(MovieGridViewModel::class.java)
+		initializeMovieGrid()
 		fetchAndBindTopMovies()
+	}
+
+	private fun initializeMovieGrid() {
+		movieGrid.apply {
+			setHasFixedSize(true)
+			isDrawingCacheEnabled = true; setItemViewCacheSize(20)
+			drawingCacheQuality = View.DRAWING_CACHE_QUALITY_HIGH
+			adapter = MovieAdapter()
+			layoutManager = if (this@MovieGridActivity.resources.configuration.orientation == ORIENTATION_PORTRAIT)
+				GridLayoutManager(this@MovieGridActivity, 2)
+			else {
+				GridLayoutManager(this@MovieGridActivity, 4)
+			}
+		}
 	}
 
 	override fun onCreateOptionsMenu(menu: Menu): Boolean {
