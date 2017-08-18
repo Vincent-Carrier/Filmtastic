@@ -11,7 +11,7 @@ import com.squareup.picasso.Picasso
 import com.vincentcarrier.filmtastic.R
 import com.vincentcarrier.filmtastic.di.DaggerNetComponent
 import com.vincentcarrier.filmtastic.pojos.Movie
-import com.vincentcarrier.filmtastic.pojos.PosterWidth.LARGE
+import com.vincentcarrier.filmtastic.pojos.PosterWidth.XLARGE
 import com.vincentcarrier.filmtastic.pojos.SortingMethod.popular
 import com.vincentcarrier.filmtastic.pojos.SortingMethod.top_rated
 import io.reactivex.rxkotlin.subscribeBy
@@ -33,8 +33,8 @@ class MovieGridActivity : AppCompatActivity(), AnkoLogger {
 		DaggerNetComponent.create().inject(this)
 
 		movieGrid.apply {
-			//			setHasFixedSize(true); setItemViewCacheSize(20)
-//			isDrawingCacheEnabled = true; drawingCacheQuality = View.DRAWING_CACHE_QUALITY_HIGH
+			setHasFixedSize(true); setItemViewCacheSize(20)
+			isDrawingCacheEnabled = true; drawingCacheQuality = View.DRAWING_CACHE_QUALITY_HIGH
 			layoutManager = GridLayoutManager(this@MovieGridActivity, 2)
 			adapter = MovieAdapter()
 		}
@@ -92,7 +92,7 @@ class MovieGridActivity : AppCompatActivity(), AnkoLogger {
 		override fun onBindViewHolder(holder: MovieAdapter.PosterViewHolder, position: Int) {
 			val movie = movies[position]
 			Picasso.with(this@MovieGridActivity)
-					.load("https://image.tmdb.org/t/p/w${LARGE.width + movie.poster_path}")
+					.load("https://image.tmdb.org/t/p/w${XLARGE.width + movie.poster_path}")
 					.into(holder.itemView.poster)
 			holder.itemView.contentDescription = movie.title
 //		holder.poster?.setOnClickListener {
