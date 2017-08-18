@@ -93,6 +93,7 @@ class MovieGridActivity : AppCompatActivity(), AnkoLogger {
 			val movie = movies[position]
 			Picasso.with(this@MovieGridActivity)
 					.load("https://image.tmdb.org/t/p/w${XLARGE.width + movie.poster_path}")
+					.placeholder(R.drawable.poster_placeholder)
 					.into(holder.itemView.poster)
 			holder.itemView.contentDescription = movie.title
 //		holder.poster?.setOnClickListener {
