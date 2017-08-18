@@ -23,7 +23,7 @@ class MovieGridViewModel(app: Application) : AndroidViewModel(app) {
 	internal var sortingMethod = SortingMethod.popular
 
 	fun fetchTopMoviesResponse(): Observable<TopMoviesResponse> {
-		return theMovieDbApi.fetchTopMoviesResponse(sortingMethod.toString())
+		return theMovieDbApi.fetchTopMoviesResponse(sortingMethod.name)
 				.observeOn(AndroidSchedulers.mainThread())
 				.subscribeOn(Schedulers.newThread())
 	}

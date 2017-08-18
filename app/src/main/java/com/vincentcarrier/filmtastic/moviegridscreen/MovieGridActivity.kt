@@ -53,8 +53,8 @@ class MovieGridActivity : AppCompatActivity(), AnkoLogger {
 	override fun onOptionsItemSelected(item: MenuItem): Boolean {
 		when (item.itemId) {
 			R.id.change_sorting_method -> {
-				when (popular) {
-					viewModel.sortingMethod -> viewModel.sortingMethod = top_rated
+				when (viewModel.sortingMethod) {
+					popular -> viewModel.sortingMethod = top_rated
 					else -> viewModel.sortingMethod = popular
 				}
 				item.title = getString(R.string.sorted_by) + " : " + viewModel.sortingMethod.toString()
