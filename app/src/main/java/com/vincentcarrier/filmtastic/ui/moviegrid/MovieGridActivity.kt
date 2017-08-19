@@ -9,6 +9,7 @@ import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.RecyclerView.ViewHolder
 import android.view.*
+import android.view.View.*
 import android.widget.ImageView
 import com.squareup.picasso.Picasso
 import com.vincentcarrier.filmtastic.R
@@ -22,7 +23,6 @@ import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.activity_movie_grid.*
 import kotlinx.android.synthetic.main.movie_grid_item.view.*
 import org.jetbrains.anko.AnkoLogger
-import org.jetbrains.anko.debug
 
 
 class MovieGridActivity : AppCompatActivity(), AnkoLogger {
@@ -31,7 +31,6 @@ class MovieGridActivity : AppCompatActivity(), AnkoLogger {
 	// TODO: Unsubscribe from RxJava subscriptions in OnPause, resubscribe on onResume
 	// TODO: Save and restore scroll position
 	// TODO: Implement infinite scrolling
-	// TODO: Display error message
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
@@ -68,7 +67,7 @@ class MovieGridActivity : AppCompatActivity(), AnkoLogger {
 			setHasFixedSize(true)
 			isDrawingCacheEnabled = true
 			setItemViewCacheSize(20)
-			drawingCacheQuality = View.DRAWING_CACHE_QUALITY_HIGH
+			drawingCacheQuality = DRAWING_CACHE_QUALITY_HIGH
 			val isPortrait = context.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT
 			layoutManager = GridLayoutManager(this@MovieGridActivity, if (isPortrait) 2 else 4)
 			adapter = MovieAdapter()
@@ -78,8 +77,17 @@ class MovieGridActivity : AppCompatActivity(), AnkoLogger {
 	private fun fetchAndBindTopMovies() {
 		viewModel.fetchTopMoviesResponse()
 				.subscribeBy(
-						onNext = { (movieGrid.adapter as MovieAdapter).movies = it.results },
-						onError = { debug { it } }
+						onNext = {
+							(movieGrid.adapter as MovieAdapter).movies = it.results
+							movieGrid.visibility = VISIBLE
+							errorIcon.visibility = GONE
+							errorMessage.visibility = GONE
+						},
+						onError = {
+							movieGrid.visibility = GONE
+							errorIcon.visibility = VISIBLE
+							errorMessage.visibility = VISIBLE
+						}
 				)
 	}
 
