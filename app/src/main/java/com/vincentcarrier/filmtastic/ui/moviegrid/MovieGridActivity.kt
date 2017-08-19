@@ -1,8 +1,8 @@
-package com.vincentcarrier.filmtastic.ui.moviegridscreen
+package com.vincentcarrier.filmtastic.ui.moviegrid
 
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
-import android.content.res.Configuration.ORIENTATION_PORTRAIT
+import android.content.res.Configuration
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.GridLayoutManager
@@ -17,7 +17,7 @@ import com.vincentcarrier.filmtastic.pojos.Movie
 import com.vincentcarrier.filmtastic.pojos.PosterWidth.XLARGE
 import com.vincentcarrier.filmtastic.pojos.SortingMethod.popular
 import com.vincentcarrier.filmtastic.pojos.SortingMethod.top_rated
-import com.vincentcarrier.filmtastic.ui.detailsscreen.DetailsActivity
+import com.vincentcarrier.filmtastic.ui.details.DetailsActivity
 import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.activity_movie_grid.*
 import kotlinx.android.synthetic.main.movie_grid_item.view.*
@@ -42,20 +42,6 @@ class MovieGridActivity : AppCompatActivity(), AnkoLogger {
 		fetchAndBindTopMovies()
 	}
 
-	private fun initializeMovieGrid() {
-		movieGrid.apply {
-			setHasFixedSize(true)
-			isDrawingCacheEnabled = true; setItemViewCacheSize(20)
-			drawingCacheQuality = View.DRAWING_CACHE_QUALITY_HIGH
-			adapter = MovieAdapter()
-			layoutManager = if (this@MovieGridActivity.resources.configuration.orientation == ORIENTATION_PORTRAIT)
-				GridLayoutManager(this@MovieGridActivity, 2)
-			else {
-				GridLayoutManager(this@MovieGridActivity, 4)
-			}
-		}
-	}
-
 	override fun onCreateOptionsMenu(menu: Menu): Boolean {
 		menuInflater.inflate(R.menu.main, menu)
 		val sortingMethodMenu = menu.findItem(R.id.change_sorting_method)
@@ -75,6 +61,18 @@ class MovieGridActivity : AppCompatActivity(), AnkoLogger {
 			}
 		}
 		return super.onOptionsItemSelected(item)
+	}
+
+	private fun initializeMovieGrid() {
+		movieGrid.apply {
+			setHasFixedSize(true)
+			isDrawingCacheEnabled = true
+			setItemViewCacheSize(20)
+			drawingCacheQuality = View.DRAWING_CACHE_QUALITY_HIGH
+			val isPortrait = context.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+			layoutManager = GridLayoutManager(this@MovieGridActivity, if (isPortrait) 2 else 4)
+			adapter = MovieAdapter()
+		}
 	}
 
 	private fun fetchAndBindTopMovies() {

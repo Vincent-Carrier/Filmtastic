@@ -1,4 +1,4 @@
-package com.vincentcarrier.filmtastic.ui.moviegridscreen
+package com.vincentcarrier.filmtastic.ui.moviegrid
 
 
 import android.app.Application

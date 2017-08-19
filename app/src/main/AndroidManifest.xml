@@ -16,14 +16,14 @@
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning"
         android:fullBackupContent="true">
-        <activity android:name="com.vincentcarrier.filmtastic.ui.moviegridscreen.MovieGridActivity">
+        <activity android:name="com.vincentcarrier.filmtastic.ui.moviegrid.MovieGridActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name="com.vincentcarrier.filmtastic.ui.detailsscreen.DetailsActivity"/>
+        <activity android:name="com.vincentcarrier.filmtastic.ui.details.DetailsActivity"/>
     </application>
 
 </manifest>

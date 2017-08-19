@@ -1,11 +1,11 @@
-package com.vincentcarrier.filmtastic.ui.detailsscreen
+package com.vincentcarrier.filmtastic.ui.details
 
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import com.vincentcarrier.filmtastic.R
 import com.vincentcarrier.filmtastic.pojos.Movie
-import com.vincentcarrier.filmtastic.ui.moviegridscreen.loadImageInto
+import com.vincentcarrier.filmtastic.ui.moviegrid.loadImageInto
 import kotlinx.android.synthetic.main.activity_details.*
 
 class DetailsActivity : AppCompatActivity() {
