@@ -4,6 +4,7 @@ import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import com.vincentcarrier.filmtastic.TheMovieDbApi
 import dagger.Module
 import dagger.Provides
+import io.reactivex.schedulers.Schedulers
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
@@ -25,7 +26,7 @@ class NetModule {
 				.client(client)
 				.baseUrl("http://api.themoviedb.org/3/movie/")
 				.addConverterFactory(MoshiConverterFactory.create())
-				.addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+				.addCallAdapterFactory(RxJava2CallAdapterFactory.createWithScheduler(Schedulers.io()))
 				.build()
 	}
 

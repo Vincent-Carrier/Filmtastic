@@ -19,18 +19,19 @@ import com.vincentcarrier.filmtastic.pojos.PosterWidth.XLARGE
 import com.vincentcarrier.filmtastic.pojos.SortingMethod.popular
 import com.vincentcarrier.filmtastic.pojos.SortingMethod.top_rated
 import com.vincentcarrier.filmtastic.ui.details.DetailsActivity
+import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.activity_movie_grid.*
 import kotlinx.android.synthetic.main.movie_grid_item.view.*
 import org.jetbrains.anko.AnkoLogger
 
+// TODO: Implement infinite scrolling
+// TODO: Show loading icon
 
 class MovieGridActivity : AppCompatActivity(), AnkoLogger {
-	private lateinit var viewModel: MovieGridViewModel
 
-	// TODO: Unsubscribe from RxJava subscriptions in OnPause, resubscribe on onResume
-	// TODO: Implement infinite scrolling
-	// TODO: Show loading icon
+	private lateinit var viewModel: MovieGridViewModel
+	lateinit var topMoviesResponse: Disposable
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
@@ -70,12 +71,14 @@ class MovieGridActivity : AppCompatActivity(), AnkoLogger {
 			drawingCacheQuality = DRAWING_CACHE_QUALITY_HIGH
 			val isPortrait = context.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT
 			layoutManager = GridLayoutManager(this@MovieGridActivity, if (isPortrait) 2 else 4)
+			clearOnScrollListeners()
+			addOnScrollListener(InfiniteScrollListener({ loadMoreMovies() }, layoutManager as GridLayoutManager))
 			adapter = MovieAdapter()
 		}
 	}
 
 	private fun fetchAndBindTopMovies() {
-		viewModel.fetchTopMoviesResponse()
+		topMoviesResponse = viewModel.fetchTopMoviesResponse()
 				.subscribeBy(
 						onNext = {
 							viewModel.movies = it.results
@@ -90,6 +93,29 @@ class MovieGridActivity : AppCompatActivity(), AnkoLogger {
 							errorMessage.visibility = VISIBLE
 						}
 				)
+	}
+
+	private fun loadMoreMovies() {
+		viewModel.fetchTopMoviesResponse((viewModel.movies!!.size / 20) + 1)
+				.subscribeBy(
+						onNext = {
+							viewModel.movies!!.plus(it.results)
+							movieGrid.adapter.notifyDataSetChanged()
+							movieGrid.visibility = VISIBLE
+							errorIcon.visibility = GONE
+							errorMessage.visibility = GONE
+						},
+						onError = {
+							movieGrid.visibility = GONE
+							errorIcon.visibility = VISIBLE
+							errorMessage.visibility = VISIBLE
+						}
+				)
+	}
+
+	override fun onDestroy() {
+		topMoviesResponse.dispose()
+		super.onDestroy()
 	}
 
 	inner class MovieAdapter() : RecyclerView.Adapter<MovieAdapter.PosterViewHolder>() {

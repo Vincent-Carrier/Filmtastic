@@ -10,7 +10,6 @@ import com.vincentcarrier.filmtastic.pojos.SortingMethod
 import com.vincentcarrier.filmtastic.pojos.TopMoviesResponse
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 
 class MovieGridViewModel(app: Application) : AndroidViewModel(app) {
@@ -24,9 +23,8 @@ class MovieGridViewModel(app: Application) : AndroidViewModel(app) {
 	internal var sortingMethod = SortingMethod.popular
 	internal var movies: List<Movie>? = null
 
-	fun fetchTopMoviesResponse(): Observable<TopMoviesResponse> {
-		return theMovieDbApi.fetchTopMoviesResponse(sortingMethod.name)
+	fun fetchTopMoviesResponse(page: Int = 1): Observable<TopMoviesResponse> {
+		return theMovieDbApi.fetchTopMoviesResponse(sortingMethod.name, page.toString())
 				.observeOn(AndroidSchedulers.mainThread())
-				.subscribeOn(Schedulers.newThread())
 	}
 }
