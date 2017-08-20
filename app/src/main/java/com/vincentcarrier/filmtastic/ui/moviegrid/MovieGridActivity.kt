@@ -29,8 +29,8 @@ class MovieGridActivity : AppCompatActivity(), AnkoLogger {
 	private lateinit var viewModel: MovieGridViewModel
 
 	// TODO: Unsubscribe from RxJava subscriptions in OnPause, resubscribe on onResume
-	// TODO: Save and restore scroll position
 	// TODO: Implement infinite scrolling
+	// TODO: Show loading icon
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
@@ -38,7 +38,7 @@ class MovieGridActivity : AppCompatActivity(), AnkoLogger {
 		DaggerNetComponent.create().inject(this)
 		viewModel = ViewModelProviders.of(this).get(MovieGridViewModel::class.java)
 		initializeMovieGrid()
-		fetchAndBindTopMovies()
+		if (viewModel.movies == null) fetchAndBindTopMovies()
 	}
 
 	override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -78,7 +78,8 @@ class MovieGridActivity : AppCompatActivity(), AnkoLogger {
 		viewModel.fetchTopMoviesResponse()
 				.subscribeBy(
 						onNext = {
-							(movieGrid.adapter as MovieAdapter).movies = it.results
+							viewModel.movies = it.results
+							movieGrid.adapter.notifyDataSetChanged()
 							movieGrid.visibility = VISIBLE
 							errorIcon.visibility = GONE
 							errorMessage.visibility = GONE
@@ -93,12 +94,6 @@ class MovieGridActivity : AppCompatActivity(), AnkoLogger {
 
 	inner class MovieAdapter() : RecyclerView.Adapter<MovieAdapter.PosterViewHolder>() {
 
-		var movies: List<Movie> = emptyList()
-			set(value) {
-				field = value
-				notifyDataSetChanged()
-			}
-
 		// Kotlin Android Extensions takes care of the binding
 		inner class PosterViewHolder(itemView: View?) : ViewHolder(itemView)
 
@@ -109,7 +104,7 @@ class MovieGridActivity : AppCompatActivity(), AnkoLogger {
 		}
 
 		override fun onBindViewHolder(holder: MovieAdapter.PosterViewHolder, position: Int) {
-			val movie = movies[position]
+			val movie = viewModel.movies!!.get(position)
 			loadImageInto(movie, holder.itemView.poster)
 			holder.itemView.contentDescription = movie.title
 			holder.itemView.poster.setOnClickListener {
@@ -118,7 +113,7 @@ class MovieGridActivity : AppCompatActivity(), AnkoLogger {
 			}
 		}
 
-		override fun getItemCount(): Int = movies.size
+		override fun getItemCount(): Int = viewModel.movies?.size ?: 0
 	}
 }
 

@@ -5,6 +5,7 @@ import android.app.Application
 import android.arch.lifecycle.AndroidViewModel
 import com.vincentcarrier.filmtastic.App
 import com.vincentcarrier.filmtastic.TheMovieDbApi
+import com.vincentcarrier.filmtastic.pojos.Movie
 import com.vincentcarrier.filmtastic.pojos.SortingMethod
 import com.vincentcarrier.filmtastic.pojos.TopMoviesResponse
 import io.reactivex.Observable
@@ -21,6 +22,7 @@ class MovieGridViewModel(app: Application) : AndroidViewModel(app) {
 	}
 
 	internal var sortingMethod = SortingMethod.popular
+	internal var movies: List<Movie>? = null
 
 	fun fetchTopMoviesResponse(): Observable<TopMoviesResponse> {
 		return theMovieDbApi.fetchTopMoviesResponse(sortingMethod.name)
