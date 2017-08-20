@@ -1,5 +1,6 @@
 package com.vincentcarrier.filmtastic.di
 
+import com.vincentcarrier.filmtastic.ui.details.DetailsViewModel
 import com.vincentcarrier.filmtastic.ui.moviegrid.MovieGridActivity
 import com.vincentcarrier.filmtastic.ui.moviegrid.MovieGridViewModel
 import dagger.Component
@@ -10,4 +11,5 @@ import javax.inject.Singleton
 interface NetComponent {
 	fun inject(viewModel: MovieGridViewModel)
 	fun inject(activity: MovieGridActivity)
+	fun inject(detailsViewModel: DetailsViewModel)
 }

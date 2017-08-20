@@ -26,7 +26,6 @@ import kotlinx.android.synthetic.main.movie_grid_item.view.*
 import org.jetbrains.anko.AnkoLogger
 
 // TODO: Implement infinite scrolling
-// TODO: Show loading icon
 
 class MovieGridActivity : AppCompatActivity(), AnkoLogger {
 
@@ -83,6 +82,7 @@ class MovieGridActivity : AppCompatActivity(), AnkoLogger {
 						onNext = {
 							viewModel.movies = it.results
 							movieGrid.adapter.notifyDataSetChanged()
+							movieGridLoadingSpinner.visibility = GONE
 							movieGrid.visibility = VISIBLE
 							errorIcon.visibility = GONE
 							errorMessage.visibility = GONE
