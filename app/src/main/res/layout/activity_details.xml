@@ -26,7 +26,7 @@
         android:layout_marginEnd="16dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        android:maxHeight="100dp"
+        android:maxHeight="150dp"
         android:textSize="34sp"
         app:autoSizeMaxTextSize="100sp"
         app:autoSizeMinTextSize="12sp"
@@ -41,7 +41,7 @@
     <TextView
         android:id="@+id/synopsis"
         android:layout_width="0dp"
-        android:layout_height="103dp"
+        android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
@@ -64,17 +64,6 @@
         tools:text="8.2/10"/>
 
     <TextView
-        android:id="@+id/duration"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:textStyle="italic"
-        app:layout_constraintStart_toEndOf="@+id/detailsPoster"
-        app:layout_constraintTop_toBottomOf="@+id/year"
-        tools:text="120min"/>
-
-    <TextView
         android:id="@+id/year"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -88,11 +77,10 @@
     <android.support.v7.widget.RecyclerView
         android:id="@+id/trailerList"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginStart="16dp"
+        android:layout_height="0dp"
         android:layout_marginTop="16dp"
         app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/synopsis"/>

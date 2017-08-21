@@ -14,7 +14,7 @@ import javax.inject.Inject
 class MovieGridViewModel : ViewModel() {
 
 	@Inject lateinit var theMovieDbApi: TheMovieDbApi
-	internal var sortingMethod = SortingMethod.popular
+	internal var sortMethod = SortingMethod.popular
 	internal var movies: List<Movie>? = null
 
 	init {
@@ -22,7 +22,7 @@ class MovieGridViewModel : ViewModel() {
 	}
 
 	fun fetchTopMoviesResponse(page: Int = 1): Observable<TopMoviesResponse> {
-		return theMovieDbApi.fetchTopMoviesResponse(sortingMethod.name, page.toString())
+		return theMovieDbApi.fetchTopMoviesResponse(sortMethod.name, "$page")
 				.observeOn(AndroidSchedulers.mainThread())
 	}
 }

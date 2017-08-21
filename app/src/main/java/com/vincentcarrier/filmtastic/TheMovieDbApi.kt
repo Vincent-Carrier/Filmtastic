@@ -10,8 +10,8 @@ import retrofit2.http.Query
 
 interface TheMovieDbApi {
 
-	@GET("{sortingMethod}")
-	fun fetchTopMoviesResponse(@Path("sortingMethod") sortingMethod: String,
+	@GET("{sortMethod}")
+	fun fetchTopMoviesResponse(@Path("sortMethod") sortingMethod: String,
 	                           @Query("page") page: String): Observable<TopMoviesResponse>
 
 	@GET("{movieId}/videos")

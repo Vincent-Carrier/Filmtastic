@@ -1,10 +1,8 @@
 package com.vincentcarrier.filmtastic.pojos
 
+import com.vincentcarrier.filmtastic.R
 
-enum class SortingMethod {
-	popular, top_rated;
 
-	override fun toString(): String {
-		return super.toString().replace('_', ' ')
-	}
+enum class SortingMethod(val stringResource: Int) {
+	popular(R.string.popular), top_rated(R.string.top_rated);
 }

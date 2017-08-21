@@ -2,6 +2,7 @@ package com.vincentcarrier.filmtastic.ui.details
 
 import android.annotation.SuppressLint
 import android.arch.lifecycle.ViewModelProviders
+import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.RecyclerView
@@ -53,6 +54,7 @@ class DetailsActivity : AppCompatActivity() {
 
 		override fun onBindViewHolder(holder: TrailerViewHolder, position: Int) {
 			holder.itemView.trailerName.text = viewModel.trailers!![position].name
+			holder.itemView.setOnClickListener { it -> startActivity(Intent()) }
 		}
 
 		override fun getItemCount(): Int = viewModel.trailers?.size ?: 0

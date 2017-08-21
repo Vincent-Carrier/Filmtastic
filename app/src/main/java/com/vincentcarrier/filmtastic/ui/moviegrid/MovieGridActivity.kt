@@ -13,6 +13,7 @@ import android.view.View.*
 import android.widget.ImageView
 import com.squareup.picasso.Picasso
 import com.vincentcarrier.filmtastic.R
+import com.vincentcarrier.filmtastic.R.string
 import com.vincentcarrier.filmtastic.di.DaggerNetComponent
 import com.vincentcarrier.filmtastic.pojos.Movie
 import com.vincentcarrier.filmtastic.pojos.PosterWidth.XLARGE
@@ -30,7 +31,7 @@ import org.jetbrains.anko.AnkoLogger
 class MovieGridActivity : AppCompatActivity(), AnkoLogger {
 
 	private lateinit var viewModel: MovieGridViewModel
-	lateinit var topMoviesResponse: Disposable
+	private lateinit var topMoviesResponse: Disposable
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
@@ -43,19 +44,19 @@ class MovieGridActivity : AppCompatActivity(), AnkoLogger {
 
 	override fun onCreateOptionsMenu(menu: Menu): Boolean {
 		menuInflater.inflate(R.menu.main, menu)
-		val sortingMethodMenu = menu.findItem(R.id.change_sorting_method)
-		sortingMethodMenu.title = "${getString(R.string.sorted_by)} : ${viewModel.sortingMethod}"
+		val sortMethodMenu = menu.findItem(R.id.change_sorting_method)
+		sortMethodMenu.title = "${getString(string.sorted_by)} : ${getString(viewModel.sortMethod.stringResource)}"
 		return true
 	}
 
 	override fun onOptionsItemSelected(item: MenuItem): Boolean {
 		when (item.itemId) {
 			R.id.change_sorting_method -> {
-				when (viewModel.sortingMethod) {
-					popular -> viewModel.sortingMethod = top_rated
-					else -> viewModel.sortingMethod = popular
+				when (viewModel.sortMethod) {
+					popular -> viewModel.sortMethod = top_rated
+					else -> viewModel.sortMethod = popular
 				}
-				item.title = "${getString(R.string.sorted_by)} : ${viewModel.sortingMethod}"
+				item.title = "${getString(string.sorted_by)} : ${getString(viewModel.sortMethod.stringResource)}"
 				fetchAndBindTopMovies()
 			}
 		}
@@ -133,9 +134,9 @@ class MovieGridActivity : AppCompatActivity(), AnkoLogger {
 			val movie = viewModel.movies!!.get(position)
 			loadImageInto(movie, holder.itemView.poster)
 			holder.itemView.contentDescription = movie.title
-			holder.itemView.poster.setOnClickListener {
-				this@MovieGridActivity.startActivity(
-						Intent(this@MovieGridActivity, DetailsActivity::class.java).putExtra("movie", movie))
+			holder.itemView.setOnClickListener {
+				startActivity(Intent(this@MovieGridActivity, DetailsActivity::class.java)
+						.putExtra("movie", movie))
 			}
 		}
 
