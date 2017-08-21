@@ -4,6 +4,7 @@ import android.arch.lifecycle.ViewModel
 import com.vincentcarrier.filmtastic.App
 import com.vincentcarrier.filmtastic.TheMovieDbApi
 import com.vincentcarrier.filmtastic.pojos.Movie
+import com.vincentcarrier.filmtastic.pojos.Trailer
 import com.vincentcarrier.filmtastic.pojos.TrailersResponse
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -14,13 +15,14 @@ class DetailsViewModel : ViewModel() {
 
 	@Inject lateinit var theMovieDbApi: TheMovieDbApi
 	lateinit var movie: Movie
+	var trailers: List<Trailer>? = null
 
 	init {
 		App.netComponent.inject(this)
 	}
 
-	fun fetchMovieTrailers(movieId: Int): Observable<TrailersResponse> {
-		return theMovieDbApi.fetchMovieTrailers(movieId.toString())
+	fun fetchMovieTrailers(): Observable<TrailersResponse> {
+		return theMovieDbApi.fetchMovieTrailers(movie.id.toString())
 				.observeOn(AndroidSchedulers.mainThread())
 	}
 }
