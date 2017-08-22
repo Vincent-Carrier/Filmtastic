@@ -3,6 +3,8 @@ package com.vincentcarrier.filmtastic.ui.details
 import android.annotation.SuppressLint
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
+import android.content.Intent.ACTION_VIEW
+import android.net.Uri
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.RecyclerView
@@ -53,8 +55,13 @@ class DetailsActivity : AppCompatActivity() {
 		}
 
 		override fun onBindViewHolder(holder: TrailerViewHolder, position: Int) {
-			holder.itemView.trailerName.text = viewModel.trailers!![position].name
-			holder.itemView.setOnClickListener { it -> startActivity(Intent()) }
+			val trailer = viewModel.trailers!![position]
+			val baseUrl = if (trailer.site == "YouTube") "https://www.youtube.com/watch?v="
+			else "https://vimeo.com/230446036"
+			holder.itemView.trailerName.text = trailer.name
+			holder.itemView.setOnClickListener {
+				startActivity(Intent(ACTION_VIEW, Uri.parse(baseUrl + trailer.key)))
+			}
 		}
 
 		override fun getItemCount(): Int = viewModel.trailers?.size ?: 0
