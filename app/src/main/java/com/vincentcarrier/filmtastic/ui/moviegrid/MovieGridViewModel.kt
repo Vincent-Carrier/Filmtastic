@@ -1,30 +1,28 @@
-package com.vincentcarrier.filmtastic.moviegridscreen
+package com.vincentcarrier.filmtastic.ui.moviegrid
 
 
-import android.app.Application
-import android.arch.lifecycle.AndroidViewModel
+import android.arch.lifecycle.ViewModel
 import com.vincentcarrier.filmtastic.App
 import com.vincentcarrier.filmtastic.TheMovieDbApi
+import com.vincentcarrier.filmtastic.pojos.Movie
 import com.vincentcarrier.filmtastic.pojos.SortingMethod
 import com.vincentcarrier.filmtastic.pojos.TopMoviesResponse
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 
-class MovieGridViewModel(app: Application) : AndroidViewModel(app) {
+class MovieGridViewModel : ViewModel() {
 
 	@Inject lateinit var theMovieDbApi: TheMovieDbApi
+	internal var sortMethod = SortingMethod.popular
+	internal var movies: List<Movie>? = null
 
 	init {
 		App.netComponent.inject(this)
 	}
 
-	internal var sortingMethod = SortingMethod.popular
-
-	fun fetchTopMoviesResponse(): Observable<TopMoviesResponse> {
-		return theMovieDbApi.fetchTopMoviesResponse(sortingMethod.toString())
+	fun fetchTopMoviesResponse(page: Int = 1): Observable<TopMoviesResponse> {
+		return theMovieDbApi.fetchTopMoviesResponse(sortMethod.name, "$page")
 				.observeOn(AndroidSchedulers.mainThread())
-				.subscribeOn(Schedulers.newThread())
 	}
 }

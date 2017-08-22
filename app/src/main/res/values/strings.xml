@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">Filmtastic</string>
     <string name="sorted_by">Sorted By</string>
+    <string name="top_rated">Top Rated</string>
+    <string name="popular">Popular</string>
+    <string name="could_not_load_movies">Could not load movies</string>
+    <string name="play">Play</string>
 </resources>
