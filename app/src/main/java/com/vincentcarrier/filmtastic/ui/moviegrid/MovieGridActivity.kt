@@ -10,16 +10,13 @@ import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.RecyclerView.ViewHolder
 import android.view.*
 import android.view.View.*
-import android.widget.ImageView
-import com.squareup.picasso.Picasso
 import com.vincentcarrier.filmtastic.R
 import com.vincentcarrier.filmtastic.R.string
 import com.vincentcarrier.filmtastic.di.DaggerNetComponent
-import com.vincentcarrier.filmtastic.pojos.Movie
-import com.vincentcarrier.filmtastic.pojos.PosterWidth.XLARGE
 import com.vincentcarrier.filmtastic.pojos.SortingMethod.popular
 import com.vincentcarrier.filmtastic.pojos.SortingMethod.top_rated
 import com.vincentcarrier.filmtastic.ui.details.DetailsActivity
+import com.vincentcarrier.filmtastic.ui.loadImageInto
 import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.activity_movie_grid.*
@@ -142,11 +139,4 @@ class MovieGridActivity : AppCompatActivity(), AnkoLogger {
 
 		override fun getItemCount(): Int = viewModel.movies?.size ?: 0
 	}
-}
-
-fun loadImageInto(movie: Movie, imageView: ImageView) {
-	Picasso.with(imageView.context)
-			.load("https://image.tmdb.org/t/p/w${XLARGE.width + movie.poster_path}")
-			.placeholder(R.drawable.poster_placeholder)
-			.into(imageView)
 }
