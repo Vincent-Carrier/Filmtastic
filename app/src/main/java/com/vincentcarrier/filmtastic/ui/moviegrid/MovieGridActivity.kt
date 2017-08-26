@@ -27,33 +27,33 @@ import org.jetbrains.anko.AnkoLogger
 
 class MovieGridActivity : AppCompatActivity(), AnkoLogger {
 
-	private lateinit var viewModel: MovieGridViewModel
+	private lateinit var vm: MovieGridViewModel
 	private lateinit var topMoviesResponse: Disposable
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 		setContentView(R.layout.activity_movie_grid)
 		DaggerNetComponent.create().inject(this)
-		viewModel = ViewModelProviders.of(this).get(MovieGridViewModel::class.java)
+		vm = ViewModelProviders.of(this).get(MovieGridViewModel::class.java)
 		initializeMovieGrid()
-		if (viewModel.movies == null) fetchAndBindTopMovies()
+		if (vm.movies == null) fetchAndBindTopMovies()
 	}
 
 	override fun onCreateOptionsMenu(menu: Menu): Boolean {
 		menuInflater.inflate(R.menu.main, menu)
 		val sortMethodMenu = menu.findItem(R.id.change_sorting_method)
-		sortMethodMenu.title = "${getString(string.sorted_by)} : ${getString(viewModel.sortMethod.stringResource)}"
+		sortMethodMenu.title = "${getString(string.sorted_by)} : ${getString(vm.sortMethod.stringResource)}"
 		return true
 	}
 
 	override fun onOptionsItemSelected(item: MenuItem): Boolean {
 		when (item.itemId) {
 			R.id.change_sorting_method -> {
-				when (viewModel.sortMethod) {
-					popular -> viewModel.sortMethod = top_rated
-					else -> viewModel.sortMethod = popular
+				when (vm.sortMethod) {
+					popular -> vm.sortMethod = top_rated
+					else -> vm.sortMethod = popular
 				}
-				item.title = "${getString(string.sorted_by)} : ${getString(viewModel.sortMethod.stringResource)}"
+				item.title = "${getString(string.sorted_by)} : ${getString(vm.sortMethod.stringResource)}"
 				fetchAndBindTopMovies()
 			}
 		}
@@ -75,10 +75,10 @@ class MovieGridActivity : AppCompatActivity(), AnkoLogger {
 	}
 
 	private fun fetchAndBindTopMovies() {
-		topMoviesResponse = viewModel.fetchTopMoviesResponse()
+		topMoviesResponse = vm.fetchTopMoviesResponse()
 				.subscribeBy(
 						onNext = {
-							viewModel.movies = it.results
+							vm.movies = it.results
 							movieGrid.adapter.notifyDataSetChanged()
 							movieGridLoadingSpinner.visibility = GONE
 							movieGrid.visibility = VISIBLE
@@ -94,10 +94,10 @@ class MovieGridActivity : AppCompatActivity(), AnkoLogger {
 	}
 
 	private fun loadMoreMovies() {
-		viewModel.fetchTopMoviesResponse((viewModel.movies!!.size / 20) + 1)
+		vm.fetchTopMoviesResponse((vm.movies!!.size / 20) + 1)
 				.subscribeBy(
 						onNext = {
-							viewModel.movies!!.plus(it.results)
+							vm.movies!!.plus(it.results)
 							movieGrid.adapter.notifyDataSetChanged()
 							movieGrid.visibility = VISIBLE
 							errorIcon.visibility = GONE
@@ -128,7 +128,7 @@ class MovieGridActivity : AppCompatActivity(), AnkoLogger {
 		}
 
 		override fun onBindViewHolder(holder: MovieAdapter.PosterViewHolder, position: Int) {
-			val movie = viewModel.movies!!.get(position)
+			val movie = vm.movies!!.get(position)
 			loadImageInto(movie, holder.itemView.poster)
 			holder.itemView.contentDescription = movie.title
 			holder.itemView.setOnClickListener {
@@ -137,6 +137,6 @@ class MovieGridActivity : AppCompatActivity(), AnkoLogger {
 			}
 		}
 
-		override fun getItemCount(): Int = viewModel.movies?.size ?: 0
+		override fun getItemCount(): Int = vm.movies?.size ?: 0
 	}
 }
