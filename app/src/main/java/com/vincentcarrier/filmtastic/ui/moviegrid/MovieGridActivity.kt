@@ -9,34 +9,35 @@ import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.RecyclerView.ViewHolder
 import android.view.*
-import android.view.View.*
+import android.view.View.DRAWING_CACHE_QUALITY_HIGH
+import com.livinglifetechway.k4kotlin.hide
+import com.livinglifetechway.k4kotlin.hideViews
+import com.livinglifetechway.k4kotlin.show
+import com.livinglifetechway.k4kotlin.showViews
 import com.vincentcarrier.filmtastic.R
 import com.vincentcarrier.filmtastic.R.string
-import com.vincentcarrier.filmtastic.di.DaggerNetComponent
 import com.vincentcarrier.filmtastic.pojos.SortingMethod.popular
 import com.vincentcarrier.filmtastic.pojos.SortingMethod.top_rated
 import com.vincentcarrier.filmtastic.ui.details.DetailsActivity
 import com.vincentcarrier.filmtastic.ui.loadImageInto
-import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.activity_movie_grid.*
 import kotlinx.android.synthetic.main.movie_grid_item.view.*
 import org.jetbrains.anko.AnkoLogger
+import org.jetbrains.anko.debug
 
 // TODO: Implement infinite scrolling
 
 class MovieGridActivity : AppCompatActivity(), AnkoLogger {
 
 	private lateinit var vm: MovieGridViewModel
-	private lateinit var topMoviesResponse: Disposable
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 		setContentView(R.layout.activity_movie_grid)
-		DaggerNetComponent.create().inject(this)
 		vm = ViewModelProviders.of(this).get(MovieGridViewModel::class.java)
 		initializeMovieGrid()
-		if (vm.movies == null) fetchAndBindTopMovies()
+		if (vm.movies.isNotEmpty()) fetchAndBindTopMovies()
 	}
 
 	override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -68,52 +69,27 @@ class MovieGridActivity : AppCompatActivity(), AnkoLogger {
 			drawingCacheQuality = DRAWING_CACHE_QUALITY_HIGH
 			val isPortrait = context.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT
 			layoutManager = GridLayoutManager(this@MovieGridActivity, if (isPortrait) 2 else 4)
-			clearOnScrollListeners()
-			addOnScrollListener(InfiniteScrollListener({ loadMoreMovies() }, layoutManager as GridLayoutManager))
+//			clearOnScrollListeners()
+//			addOnScrollListener(InfiniteScrollListener({ loadMoreMovies() }, layoutManager as GridLayoutManager))
 			adapter = MovieAdapter()
 		}
 	}
 
 	private fun fetchAndBindTopMovies() {
-		topMoviesResponse = vm.fetchTopMoviesResponse()
+		vm.fetchTopMoviesResponse()
 				.subscribeBy(
 						onNext = {
 							vm.movies = it.results
 							movieGrid.adapter.notifyDataSetChanged()
-							movieGridLoadingSpinner.visibility = GONE
-							movieGrid.visibility = VISIBLE
-							errorIcon.visibility = GONE
-							errorMessage.visibility = GONE
+							movieGrid.show()
+							hideViews(movieGridLoadingSpinner, errorIcon, errorMessage)
 						},
 						onError = {
-							movieGrid.visibility = GONE
-							errorIcon.visibility = VISIBLE
-							errorMessage.visibility = VISIBLE
+							debug { it }
+							movieGrid.hide()
+							showViews(errorIcon, errorMessage)
 						}
 				)
-	}
-
-	private fun loadMoreMovies() {
-		vm.fetchTopMoviesResponse((vm.movies!!.size / 20) + 1)
-				.subscribeBy(
-						onNext = {
-							vm.movies!!.plus(it.results)
-							movieGrid.adapter.notifyDataSetChanged()
-							movieGrid.visibility = VISIBLE
-							errorIcon.visibility = GONE
-							errorMessage.visibility = GONE
-						},
-						onError = {
-							movieGrid.visibility = GONE
-							errorIcon.visibility = VISIBLE
-							errorMessage.visibility = VISIBLE
-						}
-				)
-	}
-
-	override fun onDestroy() {
-		topMoviesResponse.dispose()
-		super.onDestroy()
 	}
 
 	inner class MovieAdapter() : RecyclerView.Adapter<MovieAdapter.PosterViewHolder>() {
@@ -128,7 +104,7 @@ class MovieGridActivity : AppCompatActivity(), AnkoLogger {
 		}
 
 		override fun onBindViewHolder(holder: MovieAdapter.PosterViewHolder, position: Int) {
-			val movie = vm.movies!!.get(position)
+			val movie = vm.movies[position]
 			loadImageInto(movie, holder.itemView.poster)
 			holder.itemView.contentDescription = movie.title
 			holder.itemView.setOnClickListener {
@@ -137,6 +113,6 @@ class MovieGridActivity : AppCompatActivity(), AnkoLogger {
 			}
 		}
 
-		override fun getItemCount(): Int = vm.movies?.size ?: 0
+		override fun getItemCount(): Int = vm.movies.size
 	}
 }

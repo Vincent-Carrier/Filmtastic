@@ -15,7 +15,7 @@ class MovieGridViewModel : ViewModel() {
 
 	@Inject lateinit var theMovieDbApi: TheMovieDbApi
 	internal var sortMethod = SortingMethod.popular
-	internal var movies: List<Movie>? = null
+	internal var movies: List<Movie> = emptyList()
 
 	init {
 		App.netComponent.inject(this)
