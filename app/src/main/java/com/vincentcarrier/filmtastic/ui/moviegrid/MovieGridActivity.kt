@@ -20,24 +20,35 @@ import com.vincentcarrier.filmtastic.pojos.SortingMethod.popular
 import com.vincentcarrier.filmtastic.pojos.SortingMethod.top_rated
 import com.vincentcarrier.filmtastic.ui.details.DetailsActivity
 import com.vincentcarrier.filmtastic.ui.loadImageInto
+import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.activity_movie_grid.*
 import kotlinx.android.synthetic.main.movie_grid_item.view.*
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.debug
 
-// TODO: Implement RxLifecycle
+// TODO: Implement RxLifecycle when AppCompatActivity starts implementing LifecycleOwner
 
 class MovieGridActivity : AppCompatActivity(), AnkoLogger {
 
 	private lateinit var vm: MovieGridViewModel
+	private var subscription: Disposable? = null
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 		setContentView(R.layout.activity_movie_grid)
 		initializeMovieGrid()
 		vm = ViewModelProviders.of(this).get(MovieGridViewModel::class.java)
+	}
+
+	override fun onStart() {
+		super.onStart()
 		if (vm.movies.isEmpty()) fetchAndBindMovies()
+	}
+
+	override fun onDestroy() {
+		super.onDestroy()
+		subscription?.dispose()
 	}
 
 	override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -72,13 +83,12 @@ class MovieGridActivity : AppCompatActivity(), AnkoLogger {
 			layoutManager = GridLayoutManager(this@MovieGridActivity, if (isPortrait) 2 else 4)
 			adapter = MovieAdapter()
 
-//			clearOnScrollListeners()
 			addOnScrollListener(InfiniteScrollListener({ fetchAndBindMovies() }, layoutManager as GridLayoutManager))
 		}
 	}
 
 	private fun fetchAndBindMovies() {
-		vm.fetchTopMoviesResponse()
+		subscription = vm.fetchMovies()
 				.subscribeBy(
 						onSuccess = {
 							vm.movies.addAll(it)

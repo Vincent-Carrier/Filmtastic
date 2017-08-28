@@ -44,7 +44,10 @@ class DetailsActivity : AppCompatActivity(), AnkoLogger {
 					vm.trailers = it
 					trailerList.adapter.notifyDataSetChanged()
 				},
-				onError = { debug { it } }
+				onError = {
+					vm.trailers = emptyList()
+					debug { it }
+				}
 		)
 	}
 

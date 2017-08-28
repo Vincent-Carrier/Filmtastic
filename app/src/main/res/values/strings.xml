@@ -5,4 +5,5 @@
     <string name="popular">Popular</string>
     <string name="could_not_load_movies">Could not load movies</string>
     <string name="play">Play</string>
+    <string name="sign_in">Sign In</string>
 </resources>

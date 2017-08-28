@@ -27,7 +27,7 @@ class MovieGridViewModel : ViewModel() {
 		App.netComponent.inject(this)
 	}
 
-	fun fetchTopMoviesResponse(): Single<List<Movie>> {
+	fun fetchMovies(): Single<List<Movie>> {
 		return theMovieDbApi.fetchTopMoviesResponse(sortMethod.name, pageCount + 1)
 				.observeOn(AndroidSchedulers.mainThread())
 				.map { (results) -> results }
