@@ -9,55 +9,53 @@ import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.RecyclerView.ViewHolder
 import android.view.*
-import android.view.View.*
-import android.widget.ImageView
-import com.squareup.picasso.Picasso
+import android.view.View.DRAWING_CACHE_QUALITY_HIGH
+import com.livinglifetechway.k4kotlin.hide
+import com.livinglifetechway.k4kotlin.hideViews
+import com.livinglifetechway.k4kotlin.show
+import com.livinglifetechway.k4kotlin.showViews
 import com.vincentcarrier.filmtastic.R
 import com.vincentcarrier.filmtastic.R.string
-import com.vincentcarrier.filmtastic.di.DaggerNetComponent
-import com.vincentcarrier.filmtastic.pojos.Movie
-import com.vincentcarrier.filmtastic.pojos.PosterWidth.XLARGE
 import com.vincentcarrier.filmtastic.pojos.SortingMethod.popular
 import com.vincentcarrier.filmtastic.pojos.SortingMethod.top_rated
 import com.vincentcarrier.filmtastic.ui.details.DetailsActivity
-import io.reactivex.disposables.Disposable
+import com.vincentcarrier.filmtastic.ui.loadImageInto
 import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.activity_movie_grid.*
 import kotlinx.android.synthetic.main.movie_grid_item.view.*
 import org.jetbrains.anko.AnkoLogger
+import org.jetbrains.anko.debug
 
-// TODO: Implement infinite scrolling
+// TODO: Implement RxLifecycle
 
 class MovieGridActivity : AppCompatActivity(), AnkoLogger {
 
-	private lateinit var viewModel: MovieGridViewModel
-	private lateinit var topMoviesResponse: Disposable
+	private lateinit var vm: MovieGridViewModel
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 		setContentView(R.layout.activity_movie_grid)
-		DaggerNetComponent.create().inject(this)
-		viewModel = ViewModelProviders.of(this).get(MovieGridViewModel::class.java)
 		initializeMovieGrid()
-		if (viewModel.movies == null) fetchAndBindTopMovies()
+		vm = ViewModelProviders.of(this).get(MovieGridViewModel::class.java)
+		if (vm.movies.isEmpty()) fetchAndBindMovies()
 	}
 
 	override fun onCreateOptionsMenu(menu: Menu): Boolean {
 		menuInflater.inflate(R.menu.main, menu)
 		val sortMethodMenu = menu.findItem(R.id.change_sorting_method)
-		sortMethodMenu.title = "${getString(string.sorted_by)} : ${getString(viewModel.sortMethod.stringResource)}"
+		sortMethodMenu.title = "${getString(string.sorted_by)} : ${getString(vm.sortMethod.stringResource)}"
 		return true
 	}
 
 	override fun onOptionsItemSelected(item: MenuItem): Boolean {
 		when (item.itemId) {
 			R.id.change_sorting_method -> {
-				when (viewModel.sortMethod) {
-					popular -> viewModel.sortMethod = top_rated
-					else -> viewModel.sortMethod = popular
+				when (vm.sortMethod) {
+					popular -> vm.sortMethod = top_rated
+					else -> vm.sortMethod = popular
 				}
-				item.title = "${getString(string.sorted_by)} : ${getString(viewModel.sortMethod.stringResource)}"
-				fetchAndBindTopMovies()
+				item.title = "${getString(string.sorted_by)} : ${getString(vm.sortMethod.stringResource)}"
+				fetchAndBindMovies()
 			}
 		}
 		return super.onOptionsItemSelected(item)
@@ -72,56 +70,31 @@ class MovieGridActivity : AppCompatActivity(), AnkoLogger {
 			val isPortrait = context.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT
 			layoutManager = GridLayoutManager(this@MovieGridActivity, if (isPortrait) 2 else 4)
 			clearOnScrollListeners()
-			addOnScrollListener(InfiniteScrollListener({ loadMoreMovies() }, layoutManager as GridLayoutManager))
+			addOnScrollListener(InfiniteScrollListener({ fetchAndBindMovies() }, layoutManager as GridLayoutManager))
 			adapter = MovieAdapter()
 		}
 	}
 
-	private fun fetchAndBindTopMovies() {
-		topMoviesResponse = viewModel.fetchTopMoviesResponse()
+	private fun fetchAndBindMovies() {
+		vm.fetchTopMoviesResponse()
 				.subscribeBy(
 						onNext = {
-							viewModel.movies = it.results
+							vm.movies.addAll(it.results)
+							vm.pageCount += 1
 							movieGrid.adapter.notifyDataSetChanged()
-							movieGridLoadingSpinner.visibility = GONE
-							movieGrid.visibility = VISIBLE
-							errorIcon.visibility = GONE
-							errorMessage.visibility = GONE
+							movieGrid.show()
+							hideViews(movieGridLoadingSpinner, errorIcon, errorMessage)
 						},
 						onError = {
-							movieGrid.visibility = GONE
-							errorIcon.visibility = VISIBLE
-							errorMessage.visibility = VISIBLE
+							debug { it }
+							movieGrid.hide()
+							showViews(errorIcon, errorMessage)
 						}
 				)
 	}
 
-	private fun loadMoreMovies() {
-		viewModel.fetchTopMoviesResponse((viewModel.movies!!.size / 20) + 1)
-				.subscribeBy(
-						onNext = {
-							viewModel.movies!!.plus(it.results)
-							movieGrid.adapter.notifyDataSetChanged()
-							movieGrid.visibility = VISIBLE
-							errorIcon.visibility = GONE
-							errorMessage.visibility = GONE
-						},
-						onError = {
-							movieGrid.visibility = GONE
-							errorIcon.visibility = VISIBLE
-							errorMessage.visibility = VISIBLE
-						}
-				)
-	}
+	inner class MovieAdapter : RecyclerView.Adapter<MovieAdapter.PosterViewHolder>() {
 
-	override fun onDestroy() {
-		topMoviesResponse.dispose()
-		super.onDestroy()
-	}
-
-	inner class MovieAdapter() : RecyclerView.Adapter<MovieAdapter.PosterViewHolder>() {
-
-		// Kotlin Android Extensions takes care of the binding
 		inner class PosterViewHolder(itemView: View?) : ViewHolder(itemView)
 
 		override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MovieAdapter.PosterViewHolder {
@@ -131,7 +104,7 @@ class MovieGridActivity : AppCompatActivity(), AnkoLogger {
 		}
 
 		override fun onBindViewHolder(holder: MovieAdapter.PosterViewHolder, position: Int) {
-			val movie = viewModel.movies!!.get(position)
+			val movie = vm.movies[position]
 			loadImageInto(movie, holder.itemView.poster)
 			holder.itemView.contentDescription = movie.title
 			holder.itemView.setOnClickListener {
@@ -140,13 +113,6 @@ class MovieGridActivity : AppCompatActivity(), AnkoLogger {
 			}
 		}
 
-		override fun getItemCount(): Int = viewModel.movies?.size ?: 0
+		override fun getItemCount(): Int = vm.movies.size
 	}
-}
-
-fun loadImageInto(movie: Movie, imageView: ImageView) {
-	Picasso.with(imageView.context)
-			.load("https://image.tmdb.org/t/p/w${XLARGE.width + movie.poster_path}")
-			.placeholder(R.drawable.poster_placeholder)
-			.into(imageView)
 }

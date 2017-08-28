@@ -15,7 +15,7 @@ class DetailsViewModel : ViewModel() {
 
 	@Inject lateinit var theMovieDbApi: TheMovieDbApi
 	lateinit var movie: Movie
-	var trailers: List<Trailer>? = null
+	var trailers: List<Trailer> = emptyList()
 
 	init {
 		App.netComponent.inject(this)

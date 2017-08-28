@@ -14,15 +14,22 @@ import javax.inject.Inject
 class MovieGridViewModel : ViewModel() {
 
 	@Inject lateinit var theMovieDbApi: TheMovieDbApi
+
+	internal var pageCount = 0
+	internal var movies: MutableList<Movie> = mutableListOf()
 	internal var sortMethod = SortingMethod.popular
-	internal var movies: List<Movie>? = null
+		set(value) {
+			field = value
+			movies.clear()
+			pageCount = 0
+		}
 
 	init {
 		App.netComponent.inject(this)
 	}
 
-	fun fetchTopMoviesResponse(page: Int = 1): Observable<TopMoviesResponse> {
-		return theMovieDbApi.fetchTopMoviesResponse(sortMethod.name, "$page")
+	fun fetchTopMoviesResponse(): Observable<TopMoviesResponse> {
+		return theMovieDbApi.fetchTopMoviesResponse(sortMethod.name, pageCount + 1)
 				.observeOn(AndroidSchedulers.mainThread())
 	}
 }

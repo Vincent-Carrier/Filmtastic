@@ -14,38 +14,38 @@ import android.view.View
 import android.view.ViewGroup
 import com.vincentcarrier.filmtastic.R
 import com.vincentcarrier.filmtastic.pojos.Movie
-import com.vincentcarrier.filmtastic.ui.moviegrid.loadImageInto
+import com.vincentcarrier.filmtastic.ui.loadImageInto
 import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.activity_details.*
 import kotlinx.android.synthetic.main.trailer_list_item.view.*
 
 class DetailsActivity : AppCompatActivity() {
 
-	lateinit var viewModel: DetailsViewModel
+	lateinit var vm: DetailsViewModel
 
 	@SuppressLint("SetTextI18n")
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 		setContentView(R.layout.activity_details)
-		viewModel = ViewModelProviders.of(this).get(DetailsViewModel::class.java)
-		viewModel.movie = intent.getParcelableExtra<Movie>("movie")
+		vm = ViewModelProviders.of(this).get(DetailsViewModel::class.java)
+		vm.movie = intent.getParcelableExtra<Movie>("movie")
 
-		loadImageInto(viewModel.movie, detailsPoster)
-		detailsTitle.text = viewModel.movie.title
-		year.text = viewModel.movie.release_date.substring(0, 4)
-		voteAverage.text = "${viewModel.movie.vote_average}/10"
-		synopsis.text = viewModel.movie.overview
+		loadImageInto(vm.movie, detailsPoster)
+		detailsTitle.text = vm.movie.title
+		year.text = vm.movie.release_date?.substring(0, 4)
+		voteAverage.text = "${vm.movie.vote_average}/10"
+		synopsis.text = vm.movie.overview
 		trailerList.adapter = TrailerAdapter()
 
-		viewModel.fetchMovieTrailers().subscribeBy(
+		vm.fetchMovieTrailers().subscribeBy(
 				onNext = {
-					viewModel.trailers = it.results
+					vm.trailers = it.results
 					trailerList.adapter.notifyDataSetChanged()
 				}
 		)
 	}
 
-	inner class TrailerAdapter() : RecyclerView.Adapter<TrailerAdapter.TrailerViewHolder>() {
+	inner class TrailerAdapter : RecyclerView.Adapter<TrailerAdapter.TrailerViewHolder>() {
 		inner class TrailerViewHolder(itemView: View?) : ViewHolder(itemView)
 
 		override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TrailerViewHolder {
@@ -55,16 +55,17 @@ class DetailsActivity : AppCompatActivity() {
 		}
 
 		override fun onBindViewHolder(holder: TrailerViewHolder, position: Int) {
-			val trailer = viewModel.trailers!![position]
+			val trailer = vm.trailers[position]
+			// This API is stupid and should return the full URL, but no -_-
 			val baseUrl = if (trailer.site == "YouTube") "https://www.youtube.com/watch?v="
-			else "https://vimeo.com/230446036"
+			else "https://vimeo.com/"
 			holder.itemView.trailerName.text = trailer.name
 			holder.itemView.setOnClickListener {
 				startActivity(Intent(ACTION_VIEW, Uri.parse(baseUrl + trailer.key)))
 			}
 		}
 
-		override fun getItemCount(): Int = viewModel.trailers?.size ?: 0
+		override fun getItemCount(): Int = vm.trailers.size
 	}
 }
 
