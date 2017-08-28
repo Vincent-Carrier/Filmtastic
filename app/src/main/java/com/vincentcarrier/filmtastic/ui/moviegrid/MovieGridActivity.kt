@@ -67,11 +67,13 @@ class MovieGridActivity : AppCompatActivity(), AnkoLogger {
 			isDrawingCacheEnabled = true
 			setItemViewCacheSize(20)
 			drawingCacheQuality = DRAWING_CACHE_QUALITY_HIGH
+
 			val isPortrait = context.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT
 			layoutManager = GridLayoutManager(this@MovieGridActivity, if (isPortrait) 2 else 4)
-			clearOnScrollListeners()
-			addOnScrollListener(InfiniteScrollListener({ fetchAndBindMovies() }, layoutManager as GridLayoutManager))
 			adapter = MovieAdapter()
+
+//			clearOnScrollListeners()
+			addOnScrollListener(InfiniteScrollListener({ fetchAndBindMovies() }, layoutManager as GridLayoutManager))
 		}
 	}
 
@@ -79,7 +81,7 @@ class MovieGridActivity : AppCompatActivity(), AnkoLogger {
 		vm.fetchTopMoviesResponse()
 				.subscribeBy(
 						onSuccess = {
-							vm.movies.addAll(it.results)
+							vm.movies.addAll(it)
 							vm.pageCount += 1
 							movieGrid.adapter.notifyDataSetChanged()
 							movieGrid.show()

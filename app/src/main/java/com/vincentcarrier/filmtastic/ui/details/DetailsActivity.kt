@@ -41,12 +41,10 @@ class DetailsActivity : AppCompatActivity(), AnkoLogger {
 
 		vm.fetchMovieTrailers().subscribeBy(
 				onSuccess = {
-					vm.trailers = it.results
+					vm.trailers = it
 					trailerList.adapter.notifyDataSetChanged()
 				},
-				onError = {
-					debug { it }
-				}
+				onError = { debug { it } }
 		)
 	}
 

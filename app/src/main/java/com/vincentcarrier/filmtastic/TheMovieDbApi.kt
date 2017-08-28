@@ -15,5 +15,5 @@ interface TheMovieDbApi {
 	                           @Query("page") page: Int): Single<TopMoviesResponse>
 
 	@GET("{movieId}/videos")
-	fun fetchMovieTrailers(@Path("movieId") movieId: String): Single<TrailersResponse>
+	fun fetchMovieTrailers(@Path("movieId") movieId: Int): Single<TrailersResponse>
 }
