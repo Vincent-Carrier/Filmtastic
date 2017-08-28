@@ -18,8 +18,10 @@ import com.vincentcarrier.filmtastic.ui.loadImageInto
 import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.activity_details.*
 import kotlinx.android.synthetic.main.trailer_list_item.view.*
+import org.jetbrains.anko.AnkoLogger
+import org.jetbrains.anko.debug
 
-class DetailsActivity : AppCompatActivity() {
+class DetailsActivity : AppCompatActivity(), AnkoLogger {
 
 	lateinit var vm: DetailsViewModel
 
@@ -38,13 +40,17 @@ class DetailsActivity : AppCompatActivity() {
 		trailerList.adapter = TrailerAdapter()
 
 		vm.fetchMovieTrailers().subscribeBy(
-				onNext = {
+				onSuccess = {
 					vm.trailers = it.results
 					trailerList.adapter.notifyDataSetChanged()
+				},
+				onError = {
+					debug { it }
 				}
 		)
 	}
 
+	// TODO: Change the RecyclerView to something prettier
 	inner class TrailerAdapter : RecyclerView.Adapter<TrailerAdapter.TrailerViewHolder>() {
 		inner class TrailerViewHolder(itemView: View?) : ViewHolder(itemView)
 

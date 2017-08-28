@@ -78,7 +78,7 @@ class MovieGridActivity : AppCompatActivity(), AnkoLogger {
 	private fun fetchAndBindMovies() {
 		vm.fetchTopMoviesResponse()
 				.subscribeBy(
-						onNext = {
+						onSuccess = {
 							vm.movies.addAll(it.results)
 							vm.pageCount += 1
 							movieGrid.adapter.notifyDataSetChanged()
