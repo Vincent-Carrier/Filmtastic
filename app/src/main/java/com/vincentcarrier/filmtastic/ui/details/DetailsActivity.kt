@@ -56,8 +56,9 @@ class DetailsActivity : AppCompatActivity() {
 
 		override fun onBindViewHolder(holder: TrailerViewHolder, position: Int) {
 			val trailer = vm.trailers[position]
+			// This API is stupid and should return the full URL, but no -_-
 			val baseUrl = if (trailer.site == "YouTube") "https://www.youtube.com/watch?v="
-			else "https://vimeo.com/230446036"
+			else "https://vimeo.com/"
 			holder.itemView.trailerName.text = trailer.name
 			holder.itemView.setOnClickListener {
 				startActivity(Intent(ACTION_VIEW, Uri.parse(baseUrl + trailer.key)))
