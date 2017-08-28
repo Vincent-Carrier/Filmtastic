@@ -55,7 +55,7 @@ class DetailsActivity : AppCompatActivity() {
 		}
 
 		override fun onBindViewHolder(holder: TrailerViewHolder, position: Int) {
-			val trailer = vm.trailers!![position]
+			val trailer = vm.trailers[position]
 			val baseUrl = if (trailer.site == "YouTube") "https://www.youtube.com/watch?v="
 			else "https://vimeo.com/230446036"
 			holder.itemView.trailerName.text = trailer.name
@@ -64,7 +64,7 @@ class DetailsActivity : AppCompatActivity() {
 			}
 		}
 
-		override fun getItemCount(): Int = vm.trailers?.size ?: 0
+		override fun getItemCount(): Int = vm.trailers.size
 	}
 }
 

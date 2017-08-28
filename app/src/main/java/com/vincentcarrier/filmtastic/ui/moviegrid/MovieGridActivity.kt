@@ -27,6 +27,7 @@ import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.debug
 
 // TODO: Implement infinite scrolling
+// TODO: Implement RxLifecycle when LifecycleActivity becomes part of the support library
 
 class MovieGridActivity : AppCompatActivity(), AnkoLogger {
 
@@ -37,7 +38,7 @@ class MovieGridActivity : AppCompatActivity(), AnkoLogger {
 		setContentView(R.layout.activity_movie_grid)
 		vm = ViewModelProviders.of(this).get(MovieGridViewModel::class.java)
 		initializeMovieGrid()
-		if (vm.movies.isNotEmpty()) fetchAndBindTopMovies()
+		if (vm.movies.isEmpty()) fetchAndBindTopMovies()
 	}
 
 	override fun onCreateOptionsMenu(menu: Menu): Boolean {
