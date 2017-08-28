@@ -26,8 +26,7 @@ import kotlinx.android.synthetic.main.movie_grid_item.view.*
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.debug
 
-// TODO: Implement infinite scrolling
-// TODO: Implement RxLifecycle when LifecycleActivity becomes part of the support library
+// TODO: Implement RxLifecycle
 
 class MovieGridActivity : AppCompatActivity(), AnkoLogger {
 
@@ -58,9 +57,6 @@ class MovieGridActivity : AppCompatActivity(), AnkoLogger {
 				item.title = "${getString(string.sorted_by)} : ${getString(vm.sortMethod.stringResource)}"
 				fetchAndBindMovies()
 			}
-			R.id.load_more -> {
-				fetchAndBindMovies()
-			}
 		}
 		return super.onOptionsItemSelected(item)
 	}
@@ -73,8 +69,8 @@ class MovieGridActivity : AppCompatActivity(), AnkoLogger {
 			drawingCacheQuality = DRAWING_CACHE_QUALITY_HIGH
 			val isPortrait = context.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT
 			layoutManager = GridLayoutManager(this@MovieGridActivity, if (isPortrait) 2 else 4)
-//			clearOnScrollListeners()
-//			addOnScrollListener(InfiniteScrollListener({ loadMoreMovies() }, layoutManager as GridLayoutManager))
+			clearOnScrollListeners()
+			addOnScrollListener(InfiniteScrollListener({ fetchAndBindMovies() }, layoutManager as GridLayoutManager))
 			adapter = MovieAdapter()
 		}
 	}
@@ -111,7 +107,7 @@ class MovieGridActivity : AppCompatActivity(), AnkoLogger {
 			val movie = vm.movies[position]
 			loadImageInto(movie, holder.itemView.poster)
 			holder.itemView.contentDescription = movie.title
-			if (movie.poster_path != null) holder.itemView.setOnClickListener {
+			holder.itemView.setOnClickListener {
 				startActivity(Intent(this@MovieGridActivity, DetailsActivity::class.java)
 						.putExtra("movie", movie))
 			}
