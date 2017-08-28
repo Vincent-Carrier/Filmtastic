@@ -12,7 +12,7 @@ interface TheMovieDbApi {
 
 	@GET("{sortMethod}")
 	fun fetchTopMoviesResponse(@Path("sortMethod") sortingMethod: String,
-	                           @Query("page") page: String): Observable<TopMoviesResponse>
+	                           @Query("page") page: Int): Observable<TopMoviesResponse>
 
 	@GET("{movieId}/videos")
 	fun fetchMovieTrailers(@Path("movieId") movieId: String): Observable<TrailersResponse>

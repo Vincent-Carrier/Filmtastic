@@ -36,9 +36,9 @@ class MovieGridActivity : AppCompatActivity(), AnkoLogger {
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 		setContentView(R.layout.activity_movie_grid)
-		vm = ViewModelProviders.of(this).get(MovieGridViewModel::class.java)
 		initializeMovieGrid()
-		if (vm.movies.isEmpty()) fetchAndBindTopMovies()
+		vm = ViewModelProviders.of(this).get(MovieGridViewModel::class.java)
+		if (vm.movies.isEmpty()) fetchAndBindMovies()
 	}
 
 	override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -56,7 +56,10 @@ class MovieGridActivity : AppCompatActivity(), AnkoLogger {
 					else -> vm.sortMethod = popular
 				}
 				item.title = "${getString(string.sorted_by)} : ${getString(vm.sortMethod.stringResource)}"
-				fetchAndBindTopMovies()
+				fetchAndBindMovies()
+			}
+			R.id.load_more -> {
+				fetchAndBindMovies()
 			}
 		}
 		return super.onOptionsItemSelected(item)
@@ -76,11 +79,12 @@ class MovieGridActivity : AppCompatActivity(), AnkoLogger {
 		}
 	}
 
-	private fun fetchAndBindTopMovies() {
+	private fun fetchAndBindMovies() {
 		vm.fetchTopMoviesResponse()
 				.subscribeBy(
 						onNext = {
-							vm.movies = it.results
+							vm.movies.addAll(it.results)
+							vm.pageCount += 1
 							movieGrid.adapter.notifyDataSetChanged()
 							movieGrid.show()
 							hideViews(movieGridLoadingSpinner, errorIcon, errorMessage)
@@ -93,9 +97,8 @@ class MovieGridActivity : AppCompatActivity(), AnkoLogger {
 				)
 	}
 
-	inner class MovieAdapter() : RecyclerView.Adapter<MovieAdapter.PosterViewHolder>() {
+	inner class MovieAdapter : RecyclerView.Adapter<MovieAdapter.PosterViewHolder>() {
 
-		// Kotlin Android Extensions takes care of the binding
 		inner class PosterViewHolder(itemView: View?) : ViewHolder(itemView)
 
 		override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MovieAdapter.PosterViewHolder {
@@ -108,7 +111,7 @@ class MovieGridActivity : AppCompatActivity(), AnkoLogger {
 			val movie = vm.movies[position]
 			loadImageInto(movie, holder.itemView.poster)
 			holder.itemView.contentDescription = movie.title
-			holder.itemView.setOnClickListener {
+			if (movie.poster_path != null) holder.itemView.setOnClickListener {
 				startActivity(Intent(this@MovieGridActivity, DetailsActivity::class.java)
 						.putExtra("movie", movie))
 			}

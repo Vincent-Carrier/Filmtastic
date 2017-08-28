@@ -7,12 +7,12 @@ data class TopMoviesResponse(val results: List<Movie>,
                              val page: Int)
 
 @PaperParcel
-data class Movie(val id: Int,
-                 val title: String,
-                 val poster_path: String,
-                 val release_date: String,
-                 val vote_average: Double,
-                 val overview: String) : PaperParcelable {
+data class Movie(val id: Int?,
+                 val title: String?,
+                 val poster_path: String?,
+                 val release_date: String?,
+                 val vote_average: Double?,
+                 val overview: String?) : PaperParcelable {
 	companion object {
 		@JvmField
 		val CREATOR = PaperParcelMovie.CREATOR

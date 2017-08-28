@@ -32,7 +32,7 @@ class DetailsActivity : AppCompatActivity() {
 
 		loadImageInto(vm.movie, detailsPoster)
 		detailsTitle.text = vm.movie.title
-		year.text = vm.movie.release_date.substring(0, 4)
+		year.text = vm.movie.release_date?.substring(0, 4)
 		voteAverage.text = "${vm.movie.vote_average}/10"
 		synopsis.text = vm.movie.overview
 		trailerList.adapter = TrailerAdapter()
@@ -45,7 +45,7 @@ class DetailsActivity : AppCompatActivity() {
 		)
 	}
 
-	inner class TrailerAdapter() : RecyclerView.Adapter<TrailerAdapter.TrailerViewHolder>() {
+	inner class TrailerAdapter : RecyclerView.Adapter<TrailerAdapter.TrailerViewHolder>() {
 		inner class TrailerViewHolder(itemView: View?) : ViewHolder(itemView)
 
 		override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TrailerViewHolder {
