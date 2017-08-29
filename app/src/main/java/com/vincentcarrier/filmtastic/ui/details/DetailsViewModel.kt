@@ -5,6 +5,7 @@ import com.vincentcarrier.filmtastic.App
 import com.vincentcarrier.filmtastic.TheMovieDbApi
 import com.vincentcarrier.filmtastic.pojos.Movie
 import com.vincentcarrier.filmtastic.pojos.Trailer
+import com.vincentcarrier.filmtastic.pojos.TrailersResponse
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import javax.inject.Inject
@@ -23,6 +24,6 @@ class DetailsViewModel : ViewModel() {
 	fun fetchMovieTrailers(): Single<List<Trailer>> {
 		return theMovieDbApi.fetchMovieTrailers(movie.id)
 				.observeOn(AndroidSchedulers.mainThread())
-				.map { (results) -> results }
+				.map(TrailersResponse::results)
 	}
 }

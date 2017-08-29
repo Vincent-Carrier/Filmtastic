@@ -6,6 +6,7 @@ import com.vincentcarrier.filmtastic.App
 import com.vincentcarrier.filmtastic.TheMovieDbApi
 import com.vincentcarrier.filmtastic.pojos.Movie
 import com.vincentcarrier.filmtastic.pojos.SortingMethod
+import com.vincentcarrier.filmtastic.pojos.TopMoviesResponse
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import javax.inject.Inject
@@ -30,6 +31,6 @@ class MovieGridViewModel : ViewModel() {
 	fun fetchMovies(): Single<List<Movie>> {
 		return theMovieDbApi.fetchTopMoviesResponse(sortMethod.name, pageCount + 1)
 				.observeOn(AndroidSchedulers.mainThread())
-				.map { (results) -> results }
+				.map(TopMoviesResponse::results)
 	}
 }

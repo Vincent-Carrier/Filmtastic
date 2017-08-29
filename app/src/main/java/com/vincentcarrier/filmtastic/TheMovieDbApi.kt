@@ -1,7 +1,7 @@
 package com.vincentcarrier.filmtastic
 
 
-import com.vincentcarrier.filmtastic.pojos.RequestToken
+import com.vincentcarrier.filmtastic.pojos.AuthRequestToken
 import com.vincentcarrier.filmtastic.pojos.TopMoviesResponse
 import com.vincentcarrier.filmtastic.pojos.TrailersResponse
 import io.reactivex.Single
@@ -19,5 +19,5 @@ interface TheMovieDbApi {
 	fun fetchMovieTrailers(@Path("movieId") movieId: Int): Single<TrailersResponse>
 
 	@GET("authentication/token/new")
-	fun fetchRequestToken(): Single<RequestToken>
+	fun fetchRequestToken(): Single<AuthRequestToken>
 }
