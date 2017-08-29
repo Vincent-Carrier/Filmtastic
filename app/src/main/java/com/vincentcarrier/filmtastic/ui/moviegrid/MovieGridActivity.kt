@@ -68,6 +68,7 @@ class MovieGridActivity : AppCompatActivity(), AnkoLogger {
 				item.title = "${getString(string.sorted_by)} : ${getString(vm.sortMethod.stringResource)}"
 				fetchAndBindMovies()
 			}
+			R.id.sign_in -> startActivity(Intent())
 		}
 		return super.onOptionsItemSelected(item)
 	}

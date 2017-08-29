@@ -24,7 +24,7 @@ class NetModule {
 	fun provideRetrofit(client: OkHttpClient): Retrofit {
 		return Retrofit.Builder()
 				.client(client)
-				.baseUrl("http://api.themoviedb.org/3/movie/")
+				.baseUrl("http://api.themoviedb.org/3/")
 				.addConverterFactory(MoshiConverterFactory.create())
 				.addCallAdapterFactory(RxJava2CallAdapterFactory.createWithScheduler(Schedulers.io()))
 				.build()

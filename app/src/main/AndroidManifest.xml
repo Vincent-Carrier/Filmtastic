@@ -23,7 +23,9 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name="com.vincentcarrier.filmtastic.ui.details.DetailsActivity"/>
+        <activity
+            android:name="com.vincentcarrier.filmtastic.ui.details.DetailsActivity"
+            android:theme="@style/Theme.AppCompat.DayNight.NoActionBar"/>
     </application>
 
 </manifest>
