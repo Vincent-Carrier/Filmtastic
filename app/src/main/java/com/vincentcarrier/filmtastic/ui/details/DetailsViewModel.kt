@@ -14,14 +14,14 @@ import javax.inject.Inject
 class DetailsViewModel : ViewModel() {
 
 	@Inject lateinit var theMovieDbApi: TheMovieDbApi
-	lateinit var movie: Movie
-	var trailers: List<Trailer> = emptyList()
+	lateinit internal var movie: Movie
+	internal var trailers: List<Trailer> = emptyList()
 
 	init {
 		App.netComponent.inject(this)
 	}
 
-	fun fetchMovieTrailers(): Single<List<Trailer>> {
+	internal fun fetchMovieTrailers(): Single<List<Trailer>> {
 		return theMovieDbApi.fetchMovieTrailers(movie.id)
 				.observeOn(AndroidSchedulers.mainThread())
 				.map(TrailersResponse::results)

@@ -6,11 +6,6 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.INTERNET"/>
 
-    <!-- To auto-complete the email text field in the login form with the user's emails -->
-    <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
-    <uses-permission android:name="android.permission.READ_PROFILE"/>
-    <uses-permission android:name="android.permission.READ_CONTACTS"/>
-
     <application
         android:name=".App"
         android:allowBackup="true"
@@ -31,14 +26,6 @@
         <activity
             android:name=".ui.details.DetailsActivity"
             android:theme="@style/Theme.AppCompat.DayNight.NoActionBar"/>
-        <activity
-            android:name=".ui.signin.SignInActivity"
-            android:label="@string/title_activity_sign_in"
-            android:parentActivityName=".ui.moviegrid.MovieGridActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.vincentcarrier.filmtastic.ui.moviegrid.MovieGridActivity"/>
-        </activity>
     </application>
 
 </manifest>

@@ -2,7 +2,6 @@ package com.vincentcarrier.filmtastic.di
 
 import com.vincentcarrier.filmtastic.ui.details.DetailsViewModel
 import com.vincentcarrier.filmtastic.ui.moviegrid.MovieGridViewModel
-import com.vincentcarrier.filmtastic.ui.signin.SignInViewModel
 import dagger.Component
 import javax.inject.Singleton
 
@@ -11,5 +10,4 @@ import javax.inject.Singleton
 interface NetComponent {
 	fun inject(viewModel: MovieGridViewModel)
 	fun inject(viewModel: DetailsViewModel)
-	fun inject(viewModel: SignInViewModel)
 }

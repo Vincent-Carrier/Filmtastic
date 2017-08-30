@@ -19,11 +19,11 @@ import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.activity_details.*
 import kotlinx.android.synthetic.main.trailer_list_item.view.*
 import org.jetbrains.anko.AnkoLogger
-import org.jetbrains.anko.debug
+import org.jetbrains.anko.error
 
 class DetailsActivity : AppCompatActivity(), AnkoLogger {
 
-	lateinit var vm: DetailsViewModel
+	lateinit private var vm: DetailsViewModel
 
 	@SuppressLint("SetTextI18n")
 	override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,7 +46,7 @@ class DetailsActivity : AppCompatActivity(), AnkoLogger {
 				},
 				onError = {
 					vm.trailers = emptyList()
-					debug { it }
+					error { it }
 				}
 		)
 	}

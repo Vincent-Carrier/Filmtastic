@@ -2,7 +2,9 @@ package com.vincentcarrier.filmtastic.ui.moviegrid
 
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
+import android.content.Intent.ACTION_VIEW
 import android.content.res.Configuration
+import android.net.Uri
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.GridLayoutManager
@@ -25,7 +27,8 @@ import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.activity_movie_grid.*
 import kotlinx.android.synthetic.main.movie_grid_item.view.*
 import org.jetbrains.anko.AnkoLogger
-import org.jetbrains.anko.debug
+import org.jetbrains.anko.error
+import org.jetbrains.anko.info
 
 // TODO: Implement RxLifecycle when AppCompatActivity starts implementing LifecycleOwner
 
@@ -46,6 +49,22 @@ class MovieGridActivity : AppCompatActivity(), AnkoLogger {
 		if (vm.movies.isEmpty()) fetchAndBindMovies()
 	}
 
+	override fun onResume() {
+		super.onResume()
+		if (vm.hasRequestToken) vm.fetchSessionId().subscribeBy(
+				onSuccess = { it ->
+					vm.sessionId = it
+					vm.hasRequestToken = false
+					info { it }
+					invalidateOptionsMenu()
+
+					getSharedPreferences("session id", MODE_PRIVATE)
+							.edit().putString("session id", it).apply()
+				},
+				onError = { error { it } }
+		)
+	}
+
 	override fun onDestroy() {
 		super.onDestroy()
 		subscription?.dispose()
@@ -55,6 +74,9 @@ class MovieGridActivity : AppCompatActivity(), AnkoLogger {
 		menuInflater.inflate(R.menu.main, menu)
 		val sortMethodMenu = menu.findItem(R.id.change_sorting_method)
 		sortMethodMenu.title = "${getString(string.sorted_by)} : ${getString(vm.sortMethod.stringResource)}"
+
+		val signInMenu = menu.findItem(R.id.sign_in)
+		if (vm.sessionId != null) signInMenu.isVisible = false
 		return true
 	}
 
@@ -68,7 +90,14 @@ class MovieGridActivity : AppCompatActivity(), AnkoLogger {
 				item.title = "${getString(string.sorted_by)} : ${getString(vm.sortMethod.stringResource)}"
 				fetchAndBindMovies()
 			}
-			R.id.sign_in -> startActivity(Intent())
+			R.id.sign_in -> vm.fetchRequestToken().subscribeBy(
+					onSuccess = { it ->
+						vm.hasRequestToken = true
+						startActivity(Intent(ACTION_VIEW,
+								Uri.parse("https://www.themoviedb.org/authenticate/" + it)))
+					},
+					onError = { it -> error { it } }
+			)
 		}
 		return super.onOptionsItemSelected(item)
 	}
@@ -99,7 +128,7 @@ class MovieGridActivity : AppCompatActivity(), AnkoLogger {
 							hideViews(movieGridLoadingSpinner, errorIcon, errorMessage)
 						},
 						onError = {
-							debug { it }
+							error { it }
 							movieGrid.hide()
 							showViews(errorIcon, errorMessage)
 						}

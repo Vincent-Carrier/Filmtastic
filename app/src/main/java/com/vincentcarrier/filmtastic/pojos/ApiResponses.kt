@@ -3,8 +3,7 @@ package com.vincentcarrier.filmtastic.pojos
 import paperparcel.PaperParcel
 import paperparcel.PaperParcelable
 
-data class TopMoviesResponse(val results: List<Movie>,
-                             val page: Int)
+class TopMoviesResponse(val results: List<Movie>)
 
 @PaperParcel
 data class Movie(val id: Int,
@@ -18,3 +17,19 @@ data class Movie(val id: Int,
 		val CREATOR = PaperParcelMovie.CREATOR
 	}
 }
+
+class TrailersResponse(val results: List<Trailer>?)
+
+class Trailer(val name: String,
+              val key: String,
+              val site: String)
+
+class RequestTokenResponse(
+		val success: Boolean,
+		val request_token: String
+)
+
+class SessionIdResponse(
+		val success: Boolean,
+		val session_id: String
+)
