@@ -1,5 +1,6 @@
 package com.vincentcarrier.filmtastic.pojos
 
+import android.os.Parcel
 import com.google.gson.annotations.SerializedName
 import paperparcel.PaperParcel
 import paperparcel.PaperParcelable
@@ -19,6 +20,13 @@ data class Movie(val id: Int,
 	companion object {
 		@JvmField
 		val CREATOR = PaperParcelMovie.CREATOR
+
+	}
+
+	override fun describeContents() = 0
+
+	override fun writeToParcel(dest: Parcel, flags: Int) {
+		PaperParcelMovie.writeToParcel(this, dest, flags)
 	}
 }
 

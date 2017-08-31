@@ -16,26 +16,21 @@ import com.livinglifetechway.k4kotlin.hideViews
 import com.livinglifetechway.k4kotlin.showViews
 import com.trello.rxlifecycle2.android.lifecycle.kotlin.bindToLifecycle
 import com.vincentcarrier.filmtastic.R
-import com.vincentcarrier.filmtastic.R.string
-import com.vincentcarrier.filmtastic.pojos.SortingMethod.popular
-import com.vincentcarrier.filmtastic.pojos.SortingMethod.top_rated
 import com.vincentcarrier.filmtastic.ui.details.DetailsActivity
 import com.vincentcarrier.filmtastic.ui.loadImageInto
 import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.activity_movie_grid.*
 import kotlinx.android.synthetic.main.movie_grid_item.view.*
 import org.jetbrains.anko.AnkoLogger
-import org.jetbrains.anko.error
-import org.jetbrains.anko.info
 import org.jetbrains.anko.toast
 
 /*
- TODO: Change JSON adapter to Gson
- TODO: Write some Robolectric tests
- TODO: Convert RecyclerView.Adapters to Epoxy
- TODO: Deep-link the app, launch the sign-in page in an in-app browser
- TODO: Allow the user to add a movie to his watchlist
- TODO: Optimize gradle build */
+TODO: Fix menu overflow
+TODO: Fix "mapper function returned a null value"
+TODO: Deep-link the app, launch the sign-in page in an in-app browser
+TODO: Allow the user to add a movie to his watchlist
+TODO: Optimize gradle build
+*/
 
 class MovieGridActivity : LifecycleActivity(), AnkoLogger {
 
@@ -52,15 +47,10 @@ class MovieGridActivity : LifecycleActivity(), AnkoLogger {
 	override fun onResume() {
 		super.onResume()
 		if (vm.movies.isEmpty()) fetchAndBindMovies()
-		if (vm.hasRequestToken) vm.fetchSessionId().subscribeBy(
-				onSuccess = { it ->
-					vm.sessionId = it
-					vm.hasRequestToken = false
-					info { it }
+		vm.fetchSessionId()?.subscribeBy(
+				onSuccess = {
+					vm.storeSessionId(it)
 					invalidateOptionsMenu()
-
-					getSharedPreferences("session id", MODE_PRIVATE)
-							.edit().putString("session id", it).apply()
 				},
 				onError = { toast(it.localizedMessage) }
 		)
@@ -68,31 +58,25 @@ class MovieGridActivity : LifecycleActivity(), AnkoLogger {
 
 	override fun onCreateOptionsMenu(menu: Menu): Boolean {
 		menuInflater.inflate(R.menu.main, menu)
-		val sortMethodMenu = menu.findItem(R.id.change_sorting_method)
-		sortMethodMenu.title = "${getString(string.sorted_by)} : ${getString(vm.sortMethod.stringResource)}"
-
-		val signInMenu = menu.findItem(R.id.sign_in)
-		if (vm.sessionId != null) signInMenu.isVisible = false
+		menu.findItem(R.id.change_sort_method).title = vm.getSortMethodMenuTitle()
+		menu.findItem(R.id.sign_in).isVisible = (vm.retrieveSessionId() == null)
 		return true
 	}
 
 	override fun onOptionsItemSelected(item: MenuItem): Boolean {
 		when (item.itemId) {
-			R.id.change_sorting_method -> {
-				when (vm.sortMethod) {
-					popular -> vm.sortMethod = top_rated
-					else -> vm.sortMethod = popular
-				}
-				item.title = "${getString(string.sorted_by)} : ${getString(vm.sortMethod.stringResource)}"
+			R.id.change_sort_method -> {
+				vm.changeSortMethod()
+				item.title = vm.getSortMethodMenuTitle()
 				fetchAndBindMovies()
 			}
 			R.id.sign_in -> vm.fetchRequestToken().subscribeBy(
-					onSuccess = { it ->
+					onSuccess = {
+						val BASE_URL = "https://www.themoviedb.org/authenticate/"
+						startActivity(Intent(ACTION_VIEW, Uri.parse(BASE_URL + it)))
 						vm.hasRequestToken = true
-						startActivity(Intent(ACTION_VIEW,
-								Uri.parse("https://www.themoviedb.org/authenticate/" + it)))
 					},
-					onError = { it -> error { it } }
+					onError = { toast(it.localizedMessage) }
 			)
 		}
 		return super.onOptionsItemSelected(item)
