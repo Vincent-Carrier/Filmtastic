@@ -1,17 +1,18 @@
 package com.vincentcarrier.filmtastic.ui.details
 
 import android.annotation.SuppressLint
+import android.arch.lifecycle.LifecycleActivity
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.content.Intent.ACTION_VIEW
 import android.net.Uri
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.RecyclerView.ViewHolder
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.trello.rxlifecycle2.android.lifecycle.kotlin.bindToLifecycle
 import com.vincentcarrier.filmtastic.R
 import com.vincentcarrier.filmtastic.pojos.Movie
 import com.vincentcarrier.filmtastic.ui.loadImageInto
@@ -21,7 +22,7 @@ import kotlinx.android.synthetic.main.trailer_list_item.view.*
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.error
 
-class DetailsActivity : AppCompatActivity(), AnkoLogger {
+class DetailsActivity : LifecycleActivity(), AnkoLogger {
 
 	lateinit private var vm: DetailsViewModel
 
@@ -39,7 +40,9 @@ class DetailsActivity : AppCompatActivity(), AnkoLogger {
 		synopsis.text = vm.movie.overview
 		trailerList.adapter = TrailerAdapter()
 
-		vm.fetchMovieTrailers().subscribeBy(
+		vm.fetchMovieTrailers()
+				.bindToLifecycle(this)
+				.subscribeBy(
 				onSuccess = {
 					vm.trailers = it
 					trailerList.adapter.notifyDataSetChanged()

@@ -1,12 +1,12 @@
 package com.vincentcarrier.filmtastic.ui.moviegrid
 
+import android.arch.lifecycle.LifecycleActivity
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.content.Intent.ACTION_VIEW
 import android.content.res.Configuration
 import android.net.Uri
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.RecyclerView.ViewHolder
@@ -16,13 +16,13 @@ import com.livinglifetechway.k4kotlin.hide
 import com.livinglifetechway.k4kotlin.hideViews
 import com.livinglifetechway.k4kotlin.show
 import com.livinglifetechway.k4kotlin.showViews
+import com.trello.rxlifecycle2.android.lifecycle.kotlin.bindToLifecycle
 import com.vincentcarrier.filmtastic.R
 import com.vincentcarrier.filmtastic.R.string
 import com.vincentcarrier.filmtastic.pojos.SortingMethod.popular
 import com.vincentcarrier.filmtastic.pojos.SortingMethod.top_rated
 import com.vincentcarrier.filmtastic.ui.details.DetailsActivity
 import com.vincentcarrier.filmtastic.ui.loadImageInto
-import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.activity_movie_grid.*
 import kotlinx.android.synthetic.main.movie_grid_item.view.*
@@ -30,16 +30,22 @@ import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.error
 import org.jetbrains.anko.info
 
-// TODO: Implement RxLifecycle when AppCompatActivity starts implementing LifecycleOwner
+/*
+ TODO: Change JSON adapter to Gson
+ TODO: Write some Robolectric tests
+ TODO: Convert RecyclerView.Adapters to Epoxy
+ TODO: Deep-link the app, launch the sign-in page in an in-app browser
+ TODO: Allow the user to add a movie to his watchlist
+ TODO: Optimize gradle build */
 
-class MovieGridActivity : AppCompatActivity(), AnkoLogger {
+class MovieGridActivity : LifecycleActivity(), AnkoLogger {
 
 	private lateinit var vm: MovieGridViewModel
-	private var subscription: Disposable? = null
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 		setContentView(R.layout.activity_movie_grid)
+		setActionBar(toolbar)
 		initializeMovieGrid()
 		vm = ViewModelProviders.of(this).get(MovieGridViewModel::class.java)
 	}
@@ -63,11 +69,6 @@ class MovieGridActivity : AppCompatActivity(), AnkoLogger {
 				},
 				onError = { error { it } }
 		)
-	}
-
-	override fun onDestroy() {
-		super.onDestroy()
-		subscription?.dispose()
 	}
 
 	override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -118,7 +119,8 @@ class MovieGridActivity : AppCompatActivity(), AnkoLogger {
 	}
 
 	private fun fetchAndBindMovies() {
-		subscription = vm.fetchMovies()
+		vm.fetchMovies()
+				.bindToLifecycle(this)
 				.subscribeBy(
 						onSuccess = {
 							vm.movies.addAll(it)

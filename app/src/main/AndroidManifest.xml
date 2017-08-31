@@ -24,8 +24,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.details.DetailsActivity"
-            android:theme="@style/Theme.AppCompat.DayNight.NoActionBar"/>
+            android:name=".ui.details.DetailsActivity"/>
     </application>
 
 </manifest>

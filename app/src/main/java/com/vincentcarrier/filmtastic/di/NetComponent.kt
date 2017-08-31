@@ -3,6 +3,7 @@ package com.vincentcarrier.filmtastic.di
 import com.vincentcarrier.filmtastic.ui.details.DetailsViewModel
 import com.vincentcarrier.filmtastic.ui.moviegrid.MovieGridViewModel
 import dagger.Component
+import okhttp3.OkHttpClient
 import javax.inject.Singleton
 
 @Singleton
@@ -10,4 +11,6 @@ import javax.inject.Singleton
 interface NetComponent {
 	fun inject(viewModel: MovieGridViewModel)
 	fun inject(viewModel: DetailsViewModel)
+
+	val client: OkHttpClient
 }

@@ -5,13 +5,13 @@
     <item
         android:orderInCategory="1"
         app:showAsAction="ifRoom"
-        android:id="@+id/sign_in"
-        android:title="@string/sign_in"/>
-
+        android:id="@+id/change_sorting_method"
+        android:title="@string/sorted_by"/>
     <item
         android:orderInCategory="2"
         app:showAsAction="ifRoom"
-        android:id="@+id/change_sorting_method"
-        android:title="@string/sorted_by"/>
+        android:id="@+id/sign_in"
+        android:title="@string/sign_in"/>
+
 
 </menu>
