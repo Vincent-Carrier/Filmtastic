@@ -44,12 +44,14 @@ class MovieGridViewModel(app: Application) : AndroidViewModel(app) {
 				.map(RequestTokenResponse::requestToken)
 	}
 
-	internal fun fetchSessionId(): Single<String>? {
-		return if (hasRequestToken and (retrieveSessionId() == null))
-			api.fetchSessionId()
+	internal fun fetchSessionId(): Single<String> {
+		return api.fetchSessionId()
 				.observeOn(AndroidSchedulers.mainThread())
 				.map(SessionIdResponse::sessionId)
-		else return null
+	}
+
+	internal fun shouldFetchSessionId(): Boolean {
+		return (hasRequestToken and (retrieveSessionId() == null))
 	}
 
 	internal fun storeSessionId(sessionId: String) {

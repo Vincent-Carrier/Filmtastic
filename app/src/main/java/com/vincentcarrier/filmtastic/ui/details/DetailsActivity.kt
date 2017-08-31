@@ -3,6 +3,9 @@ package com.vincentcarrier.filmtastic.ui.details
 import android.annotation.SuppressLint
 import android.arch.lifecycle.LifecycleActivity
 import android.arch.lifecycle.ViewModelProviders
+import android.content.Intent
+import android.content.Intent.ACTION_VIEW
+import android.net.Uri
 import android.os.Bundle
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.RecyclerView.ViewHolder
@@ -67,7 +70,9 @@ class DetailsActivity : LifecycleActivity(), AnkoLogger {
 			val baseUrl =
 					if (trailer.site == "YouTube") "https://www.youtube.com/watch?v=" else "https://vimeo.com/"
 			holder.itemView.trailerName.text = trailer.name
-			holder.itemView.setOnClickListener { detailsWebView.loadUrl(baseUrl + trailer.key) }
+			holder.itemView.setOnClickListener {
+				startActivity(Intent(ACTION_VIEW, Uri.parse(baseUrl + trailer.key)))
+			}
 		}
 
 		override fun getItemCount(): Int = vm.trailers.size

@@ -24,7 +24,6 @@ import org.jetbrains.anko.toast
 
 /*
 TODO: Fix menu overflow
-TODO: Fix "mapper function returned a null value"
 TODO: Deep-link the app, launch the sign-in page in an in-app browser
 TODO: Allow the user to add a movie to his watchlist
 TODO: Optimize gradle build
@@ -45,7 +44,8 @@ class MovieGridActivity : LifecycleActivity(), AnkoLogger {
 	override fun onResume() {
 		super.onResume()
 		if (vm.movies.isEmpty()) fetchAndBindMovies()
-		vm.fetchSessionId()?.subscribeBy(
+		if (vm.shouldFetchSessionId())
+			vm.fetchSessionId().subscribeBy(
 				onSuccess = {
 					vm.storeSessionId(it)
 					invalidateOptionsMenu()
@@ -70,6 +70,7 @@ class MovieGridActivity : LifecycleActivity(), AnkoLogger {
 			}
 			R.id.sign_in -> vm.fetchRequestToken().subscribeBy(
 					onSuccess = {
+						toast("onSuccess")
 						signInWebView.loadUrl("https://www.themoviedb.org/authenticate/" + it)
 						vm.hasRequestToken = true
 					},
