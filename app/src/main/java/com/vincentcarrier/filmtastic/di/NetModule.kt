@@ -7,7 +7,7 @@ import dagger.Provides
 import io.reactivex.schedulers.Schedulers
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
-import retrofit2.converter.moshi.MoshiConverterFactory
+import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
 
 @Module
@@ -25,7 +25,7 @@ class NetModule {
 		return Retrofit.Builder()
 				.client(client)
 				.baseUrl("http://api.themoviedb.org/3/")
-				.addConverterFactory(MoshiConverterFactory.create())
+				.addConverterFactory(GsonConverterFactory.create())
 				.addCallAdapterFactory(RxJava2CallAdapterFactory.createWithScheduler(Schedulers.io()))
 				.build()
 	}

@@ -1,5 +1,6 @@
 package com.vincentcarrier.filmtastic.pojos
 
+import com.google.gson.annotations.SerializedName
 import paperparcel.PaperParcel
 import paperparcel.PaperParcelable
 
@@ -8,9 +9,12 @@ class TopMoviesResponse(val results: List<Movie>)
 @PaperParcel
 data class Movie(val id: Int,
                  val title: String,
-                 val poster_path: String?,
-                 val release_date: String?,
-                 val vote_average: Double?,
+                 @SerializedName("poster_path")
+                 val posterPath: String?,
+                 @SerializedName("release_date")
+                 val releaseDate: String?,
+                 @SerializedName("vote_average")
+                 val voteAverage: Double?,
                  val overview: String?) : PaperParcelable {
 	companion object {
 		@JvmField
@@ -25,11 +29,11 @@ class Trailer(val name: String,
               val site: String)
 
 class RequestTokenResponse(
-		val success: Boolean,
-		val request_token: String
+		@SerializedName("request_token")
+		val requestToken: String
 )
 
 class SessionIdResponse(
-		val success: Boolean,
-		val session_id: String
+		@SerializedName("session_id")
+		val sessionId: String
 )

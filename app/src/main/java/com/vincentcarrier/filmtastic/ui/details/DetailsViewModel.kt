@@ -14,12 +14,13 @@ import javax.inject.Inject
 class DetailsViewModel : ViewModel() {
 
 	@Inject lateinit var theMovieDbApi: TheMovieDbApi
-	lateinit internal var movie: Movie
-	internal var trailers: List<Trailer> = emptyList()
 
 	init {
 		App.netComponent.inject(this)
 	}
+
+	lateinit internal var movie: Movie
+	internal var trailers: List<Trailer> = emptyList()
 
 	internal fun fetchMovieTrailers(): Single<List<Trailer>> {
 		return theMovieDbApi.fetchMovieTrailers(movie.id)

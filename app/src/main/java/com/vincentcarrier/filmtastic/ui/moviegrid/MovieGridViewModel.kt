@@ -13,9 +13,11 @@ class MovieGridViewModel : ViewModel() {
 
 	@Inject lateinit var api: TheMovieDbApi
 
-	internal var hasRequestToken = false
-	internal var sessionId: String? = null
+	init {
+		App.netComponent.inject(this)
+	}
 
+	internal var hasRequestToken = false
 	internal var movies: MutableList<Movie> = mutableListOf()
 	internal var sortMethod = SortingMethod.popular
 		set(value) {
@@ -23,11 +25,8 @@ class MovieGridViewModel : ViewModel() {
 			movies.clear()
 			pageCount = 0
 		}
-	internal var pageCount = 0
 
-	init {
-		App.netComponent.inject(this)
-	}
+	internal var pageCount = 0
 
 	internal fun fetchMovies(): Single<List<Movie>> {
 		return api.fetchTopMoviesResponse(sortMethod.name, pageCount + 1)
@@ -38,12 +37,12 @@ class MovieGridViewModel : ViewModel() {
 	internal fun fetchRequestToken(): Single<String> {
 		return api.fetchRequestToken()
 				.observeOn(AndroidSchedulers.mainThread())
-				.map(RequestTokenResponse::request_token)
+				.map(RequestTokenResponse::requestToken)
 	}
 
 	internal fun fetchSessionId(): Single<String> {
 		return api.fetchSessionId()
 				.observeOn(AndroidSchedulers.mainThread())
-				.map(SessionIdResponse::session_id)
+				.map(SessionIdResponse::sessionId)
 	}
 }

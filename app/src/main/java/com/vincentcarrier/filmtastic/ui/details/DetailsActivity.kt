@@ -35,8 +35,8 @@ class DetailsActivity : LifecycleActivity(), AnkoLogger {
 
 		loadImageInto(vm.movie, detailsPoster)
 		detailsTitle.text = vm.movie.title
-		year.text = vm.movie.release_date?.substring(0, 4)
-		voteAverage.text = "${vm.movie.vote_average}/10"
+		year.text = vm.movie.releaseDate?.substring(0, 4)
+		voteAverage.text = "${vm.movie.voteAverage}/10"
 		synopsis.text = vm.movie.overview
 		trailerList.adapter = TrailerAdapter()
 
