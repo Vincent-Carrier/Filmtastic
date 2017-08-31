@@ -6,6 +6,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <WebView
+        android:id="@+id/signInWebView"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"/>
+
     <android.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="0dp"
@@ -71,4 +76,5 @@
         app:layout_constraintTop_toBottomOf="@+id/errorIcon"
         tools:layout_editor_absoluteX="123dp"
         tools:layout_editor_absoluteY="294dp"/>
+
 </android.support.constraint.ConstraintLayout>

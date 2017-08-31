@@ -3,9 +3,7 @@ package com.vincentcarrier.filmtastic.ui.moviegrid
 import android.arch.lifecycle.LifecycleActivity
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
-import android.content.Intent.ACTION_VIEW
-import android.content.res.Configuration
-import android.net.Uri
+import android.content.res.Configuration.ORIENTATION_PORTRAIT
 import android.os.Bundle
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -72,8 +70,7 @@ class MovieGridActivity : LifecycleActivity(), AnkoLogger {
 			}
 			R.id.sign_in -> vm.fetchRequestToken().subscribeBy(
 					onSuccess = {
-						val BASE_URL = "https://www.themoviedb.org/authenticate/"
-						startActivity(Intent(ACTION_VIEW, Uri.parse(BASE_URL + it)))
+						signInWebView.loadUrl("https://www.themoviedb.org/authenticate/" + it)
 						vm.hasRequestToken = true
 					},
 					onError = { toast(it.localizedMessage) }
@@ -89,7 +86,7 @@ class MovieGridActivity : LifecycleActivity(), AnkoLogger {
 			setItemViewCacheSize(20)
 			drawingCacheQuality = DRAWING_CACHE_QUALITY_HIGH
 
-			val isPortrait = context.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+			val isPortrait = (context.resources.configuration.orientation == ORIENTATION_PORTRAIT)
 			layoutManager = GridLayoutManager(this@MovieGridActivity, if (isPortrait) 2 else 4)
 			adapter = MovieAdapter()
 
