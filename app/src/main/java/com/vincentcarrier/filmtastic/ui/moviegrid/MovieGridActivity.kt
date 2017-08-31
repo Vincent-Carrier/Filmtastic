@@ -12,9 +12,7 @@ import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.RecyclerView.ViewHolder
 import android.view.*
 import android.view.View.DRAWING_CACHE_QUALITY_HIGH
-import com.livinglifetechway.k4kotlin.hide
 import com.livinglifetechway.k4kotlin.hideViews
-import com.livinglifetechway.k4kotlin.show
 import com.livinglifetechway.k4kotlin.showViews
 import com.trello.rxlifecycle2.android.lifecycle.kotlin.bindToLifecycle
 import com.vincentcarrier.filmtastic.R
@@ -29,6 +27,7 @@ import kotlinx.android.synthetic.main.movie_grid_item.view.*
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.error
 import org.jetbrains.anko.info
+import org.jetbrains.anko.toast
 
 /*
  TODO: Change JSON adapter to Gson
@@ -50,13 +49,9 @@ class MovieGridActivity : LifecycleActivity(), AnkoLogger {
 		vm = ViewModelProviders.of(this).get(MovieGridViewModel::class.java)
 	}
 
-	override fun onStart() {
-		super.onStart()
-		if (vm.movies.isEmpty()) fetchAndBindMovies()
-	}
-
 	override fun onResume() {
 		super.onResume()
+		if (vm.movies.isEmpty()) fetchAndBindMovies()
 		if (vm.hasRequestToken) vm.fetchSessionId().subscribeBy(
 				onSuccess = { it ->
 					vm.sessionId = it
@@ -67,7 +62,7 @@ class MovieGridActivity : LifecycleActivity(), AnkoLogger {
 					getSharedPreferences("session id", MODE_PRIVATE)
 							.edit().putString("session id", it).apply()
 				},
-				onError = { error { it } }
+				onError = { toast(it.localizedMessage) }
 		)
 	}
 
@@ -126,13 +121,12 @@ class MovieGridActivity : LifecycleActivity(), AnkoLogger {
 							vm.movies.addAll(it)
 							vm.pageCount += 1
 							movieGrid.adapter.notifyDataSetChanged()
-							movieGrid.show()
 							hideViews(movieGridLoadingSpinner, errorIcon, errorMessage)
 						},
 						onError = {
-							error { it }
-							movieGrid.hide()
-							showViews(errorIcon, errorMessage)
+							if (vm.movies.isEmpty()) {
+								showViews(errorIcon, errorMessage)
+							} else toast(it.localizedMessage)
 						}
 				)
 	}

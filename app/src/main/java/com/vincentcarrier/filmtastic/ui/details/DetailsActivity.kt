@@ -20,7 +20,7 @@ import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.activity_details.*
 import kotlinx.android.synthetic.main.trailer_list_item.view.*
 import org.jetbrains.anko.AnkoLogger
-import org.jetbrains.anko.error
+import org.jetbrains.anko.toast
 
 class DetailsActivity : LifecycleActivity(), AnkoLogger {
 
@@ -49,7 +49,8 @@ class DetailsActivity : LifecycleActivity(), AnkoLogger {
 				},
 				onError = {
 					vm.trailers = emptyList()
-					error { it }
+					trailerList.adapter.notifyDataSetChanged()
+					toast(it.localizedMessage)
 				}
 		)
 	}
