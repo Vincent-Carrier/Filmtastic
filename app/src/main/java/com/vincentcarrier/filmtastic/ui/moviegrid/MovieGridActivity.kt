@@ -39,9 +39,9 @@ class MovieGridActivity : LifecycleActivity(), AnkoLogger {
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 		setContentView(R.layout.activity_movie_grid)
+		vm = ViewModelProviders.of(this).get(MovieGridViewModel::class.java)
 		setActionBar(toolbar)
 		initializeMovieGrid()
-		vm = ViewModelProviders.of(this).get(MovieGridViewModel::class.java)
 	}
 
 	override fun onResume() {
