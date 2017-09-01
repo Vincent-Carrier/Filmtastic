@@ -34,6 +34,11 @@ android {
             signingConfig signingConfigs.config
         }
     }
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+        }
+    }
 }
 
 
@@ -75,14 +80,20 @@ dependencies {
     kapt 'nz.bradcampbell:paperparcel-compiler:2.0.2'
 
     testImplementation 'org.mockito:mockito-core:2.8.47'
+    testImplementation "com.nhaarman:mockito-kotlin-kt1.1:1.5.0"
+    testImplementation 'org.amshove.kluent:kluent:1.28'
     testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.0'
+    testImplementation "org.robolectric:robolectric:3.4.2"
+    androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.0'
     androidTestImplementation 'com.android.support.test.espresso:espresso-contrib:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
         exclude group: 'com.android.support', module: 'support-v4'
         exclude group: 'com.android.support', module: 'design'
         exclude group: 'com.android.support', module: 'recyclerview-v7'
+    }
+    androidTestImplementation('com.android.support.test.espresso:espresso-intents:2.2') {
+        exclude group: 'com.android.support', module: 'support-annotations'
     }
     androidTestImplementation 'com.jakewharton.espresso:okhttp3-idling-resource:1.0.0'
 }

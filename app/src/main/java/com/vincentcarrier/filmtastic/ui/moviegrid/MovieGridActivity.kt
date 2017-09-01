@@ -2,7 +2,6 @@ package com.vincentcarrier.filmtastic.ui.moviegrid
 
 import android.arch.lifecycle.LifecycleActivity
 import android.arch.lifecycle.ViewModelProviders
-import android.content.Intent
 import android.content.res.Configuration.ORIENTATION_PORTRAIT
 import android.os.Bundle
 import android.support.v7.widget.GridLayoutManager
@@ -10,16 +9,19 @@ import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.RecyclerView.ViewHolder
 import android.view.*
 import android.view.View.DRAWING_CACHE_QUALITY_HIGH
-import com.livinglifetechway.k4kotlin.hideViews
-import com.livinglifetechway.k4kotlin.showViews
 import com.trello.rxlifecycle2.android.lifecycle.kotlin.bindToLifecycle
 import com.vincentcarrier.filmtastic.R
+import com.vincentcarrier.filmtastic.R.id.change_sort_method
+import com.vincentcarrier.filmtastic.R.id.sign_in
+import com.vincentcarrier.filmtastic.R.string
 import com.vincentcarrier.filmtastic.ui.details.DetailsActivity
-import com.vincentcarrier.filmtastic.ui.loadImageInto
+import com.vincentcarrier.filmtastic.ui.loadPoster
 import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.activity_movie_grid.*
 import kotlinx.android.synthetic.main.movie_grid_item.view.*
 import org.jetbrains.anko.AnkoLogger
+import org.jetbrains.anko.browse
+import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.toast
 
 /*
@@ -38,14 +40,13 @@ class MovieGridActivity : LifecycleActivity(), AnkoLogger {
 		setContentView(R.layout.activity_movie_grid)
 		vm = ViewModelProviders.of(this).get(MovieGridViewModel::class.java)
 		setActionBar(toolbar)
-		initializeMovieGrid()
+		setUpMovieGrid()
 	}
 
 	override fun onResume() {
 		super.onResume()
 		if (vm.movies.isEmpty()) fetchAndBindMovies()
-		if (vm.shouldFetchSessionId())
-			vm.fetchSessionId().subscribeBy(
+		if (vm.shouldFetchSessionId()) vm.fetchSessionId()?.subscribeBy(
 				onSuccess = {
 					vm.storeSessionId(it)
 					invalidateOptionsMenu()
@@ -56,42 +57,47 @@ class MovieGridActivity : LifecycleActivity(), AnkoLogger {
 
 	override fun onCreateOptionsMenu(menu: Menu): Boolean {
 		menuInflater.inflate(R.menu.main, menu)
-		menu.findItem(R.id.change_sort_method).title = vm.getSortMethodMenuTitle()
-		menu.findItem(R.id.sign_in).isVisible = (vm.retrieveSessionId() == null)
+		menu.findItem(change_sort_method).title = getSortMethodMenuTitle()
+		menu.findItem(sign_in).isVisible = vm.shouldFetchSessionId()
 		return true
+	}
+
+	override fun onPrepareOptionsMenu(menu: Menu): Boolean {
+		menu.findItem(change_sort_method).title = getSortMethodMenuTitle()
+		menu.findItem(sign_in).isVisible = vm.shouldFetchSessionId()
+		return super.onPrepareOptionsMenu(menu)
 	}
 
 	override fun onOptionsItemSelected(item: MenuItem): Boolean {
 		when (item.itemId) {
-			R.id.change_sort_method -> {
+			change_sort_method -> {
 				vm.changeSortMethod()
-				item.title = vm.getSortMethodMenuTitle()
+				item.title = getSortMethodMenuTitle()
 				fetchAndBindMovies()
 			}
-			R.id.sign_in -> vm.fetchRequestToken().subscribeBy(
-					onSuccess = {
-						toast("onSuccess")
-						signInWebView.loadUrl("https://www.themoviedb.org/authenticate/" + it)
-						vm.hasRequestToken = true
-					},
-					onError = { toast(it.localizedMessage) }
-			)
+			sign_in -> {
+				vm.fetchRequestToken().subscribeBy(
+						onSuccess = { browse("https://www.themoviedb.org/authenticate/" + it) },
+						onError = { toast("FRT" + it.localizedMessage) }
+				)
+			}
 		}
 		return super.onOptionsItemSelected(item)
 	}
 
-	private fun initializeMovieGrid() {
+	private fun setUpMovieGrid() {
 		movieGrid.apply {
-			setHasFixedSize(true)
-			isDrawingCacheEnabled = true
-			setItemViewCacheSize(20)
-			drawingCacheQuality = DRAWING_CACHE_QUALITY_HIGH
+			adapter = MovieAdapter()
 
 			val isPortrait = (context.resources.configuration.orientation == ORIENTATION_PORTRAIT)
 			layoutManager = GridLayoutManager(this@MovieGridActivity, if (isPortrait) 2 else 4)
-			adapter = MovieAdapter()
 
 			addOnScrollListener(InfiniteScrollListener({ fetchAndBindMovies() }, layoutManager as GridLayoutManager))
+
+			setHasFixedSize(true)
+			setItemViewCacheSize(20)
+			isDrawingCacheEnabled = true
+			drawingCacheQuality = DRAWING_CACHE_QUALITY_HIGH
 		}
 	}
 
@@ -103,14 +109,13 @@ class MovieGridActivity : LifecycleActivity(), AnkoLogger {
 							vm.movies.addAll(it)
 							vm.pageCount += 1
 							movieGrid.adapter.notifyDataSetChanged()
-							hideViews(movieGridLoadingSpinner, errorIcon, errorMessage)
 						},
-						onError = {
-							if (vm.movies.isEmpty()) {
-								showViews(errorIcon, errorMessage)
-							} else toast(it.localizedMessage)
-						}
+						onError = { toast(it.localizedMessage) }
 				)
+	}
+
+	private fun getSortMethodMenuTitle(): String {
+		return "${this.getString(string.sorted_by)} : ${this.getString(vm.sortMethod.stringResource)}"
 	}
 
 	inner class MovieAdapter : RecyclerView.Adapter<MovieAdapter.PosterViewHolder>() {
@@ -125,11 +130,10 @@ class MovieGridActivity : LifecycleActivity(), AnkoLogger {
 
 		override fun onBindViewHolder(holder: MovieAdapter.PosterViewHolder, position: Int) {
 			val movie = vm.movies[position]
-			loadImageInto(movie, holder.itemView.poster)
-			holder.itemView.contentDescription = movie.title
-			holder.itemView.setOnClickListener {
-				startActivity(Intent(this@MovieGridActivity, DetailsActivity::class.java)
-						.putExtra("movie", movie))
+			holder.itemView.apply {
+				poster.loadPoster(movie)
+				contentDescription = movie.title
+				setOnClickListener { startActivity(intentFor<DetailsActivity>("movie" to movie)) }
 			}
 		}
 
