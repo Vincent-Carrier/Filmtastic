@@ -77,7 +77,10 @@ class MovieGridActivity : LifecycleActivity(), AnkoLogger {
 			}
 			sign_in -> {
 				vm.fetchRequestToken().subscribeBy(
-						onSuccess = { browse("https://www.themoviedb.org/authenticate/" + it) },
+						onSuccess = {
+							vm.requestToken = it
+							browse("https://www.themoviedb.org/authenticate/" + it)
+						},
 						onError = { toast("FRT" + it.localizedMessage) }
 				)
 			}

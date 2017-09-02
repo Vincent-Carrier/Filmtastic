@@ -30,7 +30,7 @@ class DetailsActivity : LifecycleActivity(), AnkoLogger {
 		vm = ViewModelProviders.of(this).get(DetailsViewModel::class.java)
 		vm.movie = intent.getParcelableExtra<Movie>("movie")
 
-		setUpDetailsView()
+		setUpDetailsView(vm.movie)
 
 		vm.fetchMovieTrailers()
 				.bindToLifecycle(this)
@@ -44,12 +44,12 @@ class DetailsActivity : LifecycleActivity(), AnkoLogger {
 	}
 
 	@SuppressLint("SetTextI18n")
-	private fun setUpDetailsView() {
-		detailsPoster.loadPoster(vm.movie)
-		detailsTitle.text = vm.movie.title
-		year.text = vm.movie.releaseDate?.substring(0, 4)
-		voteAverage.text = "${vm.movie.voteAverage}/10"
-		synopsis.text = vm.movie.overview
+	private fun setUpDetailsView(movie: Movie) {
+		detailsPoster.loadPoster(movie)
+		detailsTitle.text = movie.title
+		year.text = movie.releaseDate?.substring(0, 4)
+		voteAverage.text = "${movie.voteAverage}/10"
+		synopsis.text = movie.overview
 		trailerList.adapter = TrailerAdapter()
 	}
 
@@ -66,7 +66,8 @@ class DetailsActivity : LifecycleActivity(), AnkoLogger {
 			val trailer = vm.trailers[position]
 			holder.itemView.trailerName.text = trailer.name
 			val baseUrl =
-					if (trailer.site == "YouTube") "https://www.youtube.com/watch?v=" else "https://vimeo.com/"
+					if (trailer.site == "YouTube") "https://www.youtube.com/watch?v="
+					else "https://vimeo.com/"
 			holder.itemView.setOnClickListener { browse(baseUrl + trailer.key) }
 		}
 

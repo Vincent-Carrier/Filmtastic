@@ -29,7 +29,8 @@ class MovieGridViewModel(app: Application) : AndroidViewModel(app) {
 			movies.clear()
 			pageCount = 0
 		}
-	private var requestToken: String? = null
+	internal var requestToken: String? = null
+	private val PREFS_NAME = "session_id"
 
 	internal fun fetchMovies(): Single<List<Movie>> {
 		return api.fetchTopMoviesResponse(sortMethod.name, pageCount + 1)
@@ -54,13 +55,13 @@ class MovieGridViewModel(app: Application) : AndroidViewModel(app) {
 	internal fun shouldFetchSessionId(): Boolean = (retrieveSessionId() == null)
 
 	internal fun storeSessionId(sessionId: String) {
-		context().getSharedPreferences("session id", MODE_PRIVATE)
-				.edit().putString("session id", sessionId).apply()
+		context().getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+				.edit().putString(PREFS_NAME, sessionId).apply()
 	}
 
 	private fun retrieveSessionId(): String? {
-		return context().getSharedPreferences("session id", MODE_PRIVATE)
-				.getString("session id", null)
+		return context().getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+				.getString(PREFS_NAME, null)
 	}
 
 	internal fun changeSortMethod() {
