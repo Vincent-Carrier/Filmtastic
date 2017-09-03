@@ -1,7 +1,10 @@
 package com.vincentcarrier.filmtastic
 
 
-import com.vincentcarrier.filmtastic.pojos.*
+import com.vincentcarrier.filmtastic.pojos.RequestTokenResponse
+import com.vincentcarrier.filmtastic.pojos.SessionIdResponse
+import com.vincentcarrier.filmtastic.pojos.TopMoviesResponse
+import com.vincentcarrier.filmtastic.pojos.TrailersResponse
 import io.reactivex.Single
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -27,7 +30,4 @@ interface TheMovieDbApi {
 
 	@GET("authentication/session/new")
 	fun fetchSessionId(@Query("request_token") requestToken: String): Single<SessionIdResponse>
-
-	@GET("account")
-	fun fetchAccountDetails(@Query("session_id") sessionId: String): Single<AccountDetailsResponse>
 }

@@ -5,7 +5,9 @@ import android.arch.lifecycle.ViewModelProviders
 import android.content.res.Configuration.ORIENTATION_PORTRAIT
 import android.net.Uri
 import android.os.Bundle
+import android.support.customtabs.CustomTabsClient
 import android.support.customtabs.CustomTabsIntent
+import android.support.v4.content.ContextCompat
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.RecyclerView.ViewHolder
@@ -27,7 +29,6 @@ import org.jetbrains.anko.toast
 
 
 /*
-TODO: Fix menu overflow
 TODO: Deep-link the app, launch the sign-in page in an in-app browser
 TODO: Allow the user to add a movie to his watchlist
 TODO: Optimize gradle build
@@ -45,28 +46,31 @@ class MovieGridActivity : LifecycleActivity(), AnkoLogger {
 		setUpMovieGrid()
 	}
 
-	override fun onResume() {
-		super.onResume()
+	override fun onStart() {
+		super.onStart()
 		if (vm.movies.isEmpty()) fetchAndBindMovies()
-		if (vm.shouldFetchSessionId()) vm.fetchSessionId()?.subscribeBy(
+		if (!vm.isSignedIn()) {
+			CustomTabsClient.connectAndInitialize(this, "com.android.chrome")
+			vm.fetchSessionId()?.subscribeBy(
 				onSuccess = {
 					vm.storeSessionId(it)
 					invalidateOptionsMenu()
 				},
 				onError = { toast(it.localizedMessage) }
-		)
+			)
+		}
 	}
 
 	override fun onCreateOptionsMenu(menu: Menu): Boolean {
 		menuInflater.inflate(R.menu.main, menu)
 		menu.findItem(change_sort_method).title = getSortMethodMenuTitle()
-		menu.findItem(sign_in).isVisible = vm.shouldFetchSessionId()
+		menu.findItem(sign_in).isVisible = !vm.isSignedIn()
 		return true
 	}
 
 	override fun onPrepareOptionsMenu(menu: Menu): Boolean {
 		menu.findItem(change_sort_method).title = getSortMethodMenuTitle()
-		menu.findItem(sign_in).isVisible = vm.shouldFetchSessionId()
+		menu.findItem(sign_in).isVisible = !vm.isSignedIn()
 		return super.onPrepareOptionsMenu(menu)
 	}
 
@@ -82,8 +86,10 @@ class MovieGridActivity : LifecycleActivity(), AnkoLogger {
 						onSuccess = {
 							vm.requestToken = it
 							val BASE_URL = "https://www.themoviedb.org/authenticate/"
-							CustomTabsIntent.Builder().build()
-									.launchUrl(this, Uri.parse(BASE_URL + it))
+							val browser = CustomTabsIntent.Builder()
+									.setToolbarColor(ContextCompat.getColor(this, R.color.chromeToolbar))
+									.build()
+							browser.launchUrl(this, Uri.parse(BASE_URL + it))
 						},
 						onError = { toast(it.localizedMessage) }
 				)

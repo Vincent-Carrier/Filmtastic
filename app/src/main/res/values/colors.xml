@@ -4,4 +4,5 @@
     <color name="colorPrimaryDark">#338A3E</color>
     <color name="colorAccent">#F44336</color>
     <color name="white">#FFFFFF</color>
+    <color name="chromeToolbar">#081C24</color>
 </resources>
