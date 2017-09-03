@@ -3,7 +3,9 @@ package com.vincentcarrier.filmtastic.ui.moviegrid
 import android.arch.lifecycle.LifecycleActivity
 import android.arch.lifecycle.ViewModelProviders
 import android.content.res.Configuration.ORIENTATION_PORTRAIT
+import android.net.Uri
 import android.os.Bundle
+import android.support.customtabs.CustomTabsIntent
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.RecyclerView.ViewHolder
@@ -20,9 +22,9 @@ import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.activity_movie_grid.*
 import kotlinx.android.synthetic.main.movie_grid_item.view.*
 import org.jetbrains.anko.AnkoLogger
-import org.jetbrains.anko.browse
 import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.toast
+
 
 /*
 TODO: Fix menu overflow
@@ -79,9 +81,11 @@ class MovieGridActivity : LifecycleActivity(), AnkoLogger {
 				vm.fetchRequestToken().subscribeBy(
 						onSuccess = {
 							vm.requestToken = it
-							browse("https://www.themoviedb.org/authenticate/" + it)
+							val BASE_URL = "https://www.themoviedb.org/authenticate/"
+							CustomTabsIntent.Builder().build()
+									.launchUrl(this, Uri.parse(BASE_URL + it))
 						},
-						onError = { toast("FRT" + it.localizedMessage) }
+						onError = { toast(it.localizedMessage) }
 				)
 			}
 		}
@@ -89,7 +93,7 @@ class MovieGridActivity : LifecycleActivity(), AnkoLogger {
 	}
 
 	private fun setUpMovieGrid() {
-		movieGrid.apply {
+		with(movieGrid) {
 			adapter = MovieAdapter()
 
 			val isPortrait = (context.resources.configuration.orientation == ORIENTATION_PORTRAIT)
@@ -133,10 +137,12 @@ class MovieGridActivity : LifecycleActivity(), AnkoLogger {
 
 		override fun onBindViewHolder(holder: MovieAdapter.PosterViewHolder, position: Int) {
 			val movie = vm.movies[position]
-			holder.itemView.apply {
+			with(holder.itemView) {
 				poster.loadPoster(movie)
 				contentDescription = movie.title
-				setOnClickListener { startActivity(intentFor<DetailsActivity>("movie" to movie)) }
+				setOnClickListener {
+					startActivity(intentFor<DetailsActivity>("movie" to movie))
+				}
 			}
 		}
 

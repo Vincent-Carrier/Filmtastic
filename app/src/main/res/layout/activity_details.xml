@@ -52,7 +52,7 @@
         tools:text="Mere seconds before the Earth is to be demolished by an alien construction crew, journeyman Arthur Dent is swept off the planet by his friend Ford Prefect, a researcher penning a new edition of &quot;The Hitchhiker's Guide to the Galaxy.&quot;"/>
 
     <TextView
-        android:id="@+id/voteAverage"
+        android:id="@+id/score"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"

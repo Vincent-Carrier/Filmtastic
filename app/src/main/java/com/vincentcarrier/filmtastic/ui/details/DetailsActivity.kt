@@ -45,11 +45,13 @@ class DetailsActivity : LifecycleActivity(), AnkoLogger {
 
 	@SuppressLint("SetTextI18n")
 	private fun setUpDetailsView(movie: Movie) {
-		detailsPoster.loadPoster(movie)
-		detailsTitle.text = movie.title
-		year.text = movie.releaseDate?.substring(0, 4)
-		voteAverage.text = "${movie.voteAverage}/10"
-		synopsis.text = movie.overview
+		with(movie) {
+			detailsPoster.loadPoster(this)
+			detailsTitle.text = title
+			year.text = releaseDate?.substring(0, 4)
+			score.text = "$voteAverage/10"
+			synopsis.text = overview
+		}
 		trailerList.adapter = TrailerAdapter()
 	}
 

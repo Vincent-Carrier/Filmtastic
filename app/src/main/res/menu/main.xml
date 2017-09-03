@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-    >
+<menu xmlns:tools="http://schemas.android.com/tools"
+      xmlns:android="http://schemas.android.com/apk/res/android"
+      tools:ignore="AppCompatResource">
     <item
         android:orderInCategory="1"
         android:id="@+id/change_sort_method"
+        android:showAsAction="always"
         android:title="@string/sorted_by"/>
     <item
         android:orderInCategory="2"
         android:id="@+id/sign_in"
+        android:showAsAction="ifRoom"
         android:title="@string/sign_in"/>
 </menu>

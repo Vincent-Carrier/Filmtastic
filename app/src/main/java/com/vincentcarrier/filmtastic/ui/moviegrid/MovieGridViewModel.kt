@@ -52,6 +52,12 @@ class MovieGridViewModel(app: Application) : AndroidViewModel(app) {
 		}
 	}
 
+	internal fun fetchAvatar(): Single<String> {
+		return api.fetchAccountDetails(retrieveSessionId() ?: "")
+				.map(AccountDetailsResponse::avatar)
+				.map(Gravatar::hash)
+	}
+
 	internal fun shouldFetchSessionId(): Boolean = (retrieveSessionId() == null)
 
 	internal fun storeSessionId(sessionId: String) {

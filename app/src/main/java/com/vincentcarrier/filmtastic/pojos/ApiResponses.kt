@@ -33,10 +33,10 @@ class Trailer(val name: String,
               val key: String,
               val site: String)
 
-class RequestTokenResponse(
-		@SerializedName("request_token") val requestToken: String
-)
+class RequestTokenResponse(@SerializedName("request_token") val requestToken: String)
 
-class SessionIdResponse(
-		@SerializedName("session_id") val sessionId: String?
-)
+class SessionIdResponse(@SerializedName("session_id") val sessionId: String?)
+
+class AccountDetailsResponse(val avatar: Gravatar)
+
+class Gravatar(val hash: String)
