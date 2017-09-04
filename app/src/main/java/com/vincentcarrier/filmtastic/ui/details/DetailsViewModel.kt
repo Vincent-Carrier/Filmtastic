@@ -4,18 +4,17 @@ import android.app.Application
 import android.arch.lifecycle.AndroidViewModel
 import com.vincentcarrier.filmtastic.Filmtastic
 import com.vincentcarrier.filmtastic.TheMovieDbApi
-import com.vincentcarrier.filmtastic.pojos.Movie
-import com.vincentcarrier.filmtastic.pojos.Trailer
-import com.vincentcarrier.filmtastic.pojos.TrailersResponse
+import com.vincentcarrier.filmtastic.pojos.*
 import io.reactivex.Completable
 import io.reactivex.Single
-import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.android.schedulers.AndroidSchedulers.mainThread
 import javax.inject.Inject
 
 
 class DetailsViewModel(app: Application) : AndroidViewModel(app) {
 
 	@Inject lateinit var api: TheMovieDbApi
+	internal var accountId: Int? = null
 
 	init {
 		Filmtastic.netComponent.inject(this)
@@ -26,11 +25,20 @@ class DetailsViewModel(app: Application) : AndroidViewModel(app) {
 
 	internal fun fetchMovieTrailers(): Single<List<Trailer>> {
 		return api.fetchMovieTrailers(movie.id)
-				.observeOn(AndroidSchedulers.mainThread())
+				.observeOn(mainThread())
 				.map(TrailersResponse::results)
 	}
 
-	internal fun addToWatchList(): Completable {
-		return api.createWatchList()
+	internal fun addMovieToWatchList(movie: MovieRequest): Completable {
+		return api.addMovieToWatchList(movie, accountId!!, sessionId()!!)
+				.observeOn(mainThread())
 	}
+
+	internal fun fetchAccountId(): Single<Int> {
+		return api.fetchAccountDetails(sessionId()!!)
+				.observeOn(mainThread())
+				.map(AccountDetailsResponse::id)
+	}
+
+	private fun sessionId() = getApplication<Filmtastic>().retrieveSessionId()
 }
