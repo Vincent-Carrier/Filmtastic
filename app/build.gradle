@@ -29,8 +29,10 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            shrinkResources true
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'),
+                    'proguard-rules.pro'
             signingConfig signingConfigs.config
         }
     }
@@ -51,11 +53,11 @@ dependencies {
     implementation 'org.jetbrains.anko:anko:0.10.1'
     implementation 'com.github.kirtan403:K4Kotlin:0.1.4'
 
-    implementation 'com.android.support:appcompat-v7:26.0.1'
+    implementation "com.android.support:appcompat-v7:$android_support_version"
+    implementation "com.android.support:recyclerview-v7:$android_support_version"
+    implementation "com.android.support:customtabs:$android_support_version"
+    implementation "com.android.support:design:$android_support_version"
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
-    implementation 'com.android.support:recyclerview-v7:26.0.1'
-    implementation 'com.android.support:customtabs:26.0.1'
-    implementation 'com.android.support:design:26.0.1'
 
     implementation 'android.arch.lifecycle:runtime:1.0.0-alpha9'
     implementation 'android.arch.lifecycle:extensions:1.0.0-alpha9'

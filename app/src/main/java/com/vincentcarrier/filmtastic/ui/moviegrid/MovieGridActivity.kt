@@ -14,6 +14,7 @@ import android.support.v7.widget.RecyclerView.ViewHolder
 import android.view.*
 import android.view.View.DRAWING_CACHE_QUALITY_HIGH
 import com.trello.rxlifecycle2.android.lifecycle.kotlin.bindToLifecycle
+import com.vincentcarrier.filmtastic.Filmtastic
 import com.vincentcarrier.filmtastic.R
 import com.vincentcarrier.filmtastic.R.id.change_sort_method
 import com.vincentcarrier.filmtastic.R.id.sign_in
@@ -35,6 +36,7 @@ TODO: Allow the user to add a movie to his watchlist
 class MovieGridActivity : LifecycleActivity(), AnkoLogger {
 
 	private lateinit var vm: MovieGridViewModel
+	private val app = application as Filmtastic
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
@@ -47,11 +49,11 @@ class MovieGridActivity : LifecycleActivity(), AnkoLogger {
 	override fun onStart() {
 		super.onStart()
 		if (vm.movies.isEmpty()) fetchAndBindMovies()
-		if (!vm.isSignedIn()) {
+		if (app.isLoggedIn()) {
 			CustomTabsClient.connectAndInitialize(this, "com.android.chrome")
 			vm.fetchSessionId()?.subscribeBy(
 				onSuccess = {
-					vm.storeSessionId(it)
+					(application as Filmtastic).storeSessionId(it)
 					invalidateOptionsMenu()
 				},
 				onError = { toast(it.localizedMessage) }
@@ -61,14 +63,13 @@ class MovieGridActivity : LifecycleActivity(), AnkoLogger {
 
 	override fun onCreateOptionsMenu(menu: Menu): Boolean {
 		menuInflater.inflate(R.menu.main, menu)
-		menu.findItem(change_sort_method).title = getSortMethodMenuTitle()
-		menu.findItem(sign_in).isVisible = !vm.isSignedIn()
+		onPrepareOptionsMenu(menu)
 		return true
 	}
 
 	override fun onPrepareOptionsMenu(menu: Menu): Boolean {
 		menu.findItem(change_sort_method).title = getSortMethodMenuTitle()
-		menu.findItem(sign_in).isVisible = !vm.isSignedIn()
+		menu.findItem(sign_in).isVisible = !app.isLoggedIn()
 		return super.onPrepareOptionsMenu(menu)
 	}
 

@@ -12,7 +12,7 @@ import android.view.ViewGroup;
 import android.view.ViewParent;
 
 import com.jakewharton.espresso.OkHttp3IdlingResource;
-import com.vincentcarrier.filmtastic.App;
+import com.vincentcarrier.filmtastic.Filmtastic;
 import com.vincentcarrier.filmtastic.R;
 
 import org.hamcrest.Description;
@@ -39,7 +39,7 @@ public class MovieGridActivityTest {
 	@Test
 	public void movieGridActivityTest() {
 
-		IdlingResource resource = OkHttp3IdlingResource.create("OkHttp", App.netComponent.getClient());
+		IdlingResource resource = OkHttp3IdlingResource.create("OkHttp", Filmtastic.netComponent.getClient());
 		Espresso.registerIdlingResources(resource);
 
 		ViewInteraction recyclerView = onView(

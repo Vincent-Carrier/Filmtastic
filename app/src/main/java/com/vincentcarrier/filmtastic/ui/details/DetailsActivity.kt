@@ -39,7 +39,10 @@ class DetailsActivity : LifecycleActivity(), AnkoLogger {
 							vm.trailers = it
 							trailerList.adapter.notifyDataSetChanged()
 						},
-						onError = { toast(it.localizedMessage) }
+						onError = {
+							vm.trailers = emptyList()
+							toast(it.localizedMessage)
+						}
 				)
 	}
 
