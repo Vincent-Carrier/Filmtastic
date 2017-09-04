@@ -29,9 +29,7 @@ import org.jetbrains.anko.toast
 
 
 /*
-TODO: Deep-link the app, launch the sign-in page in an in-app browser
 TODO: Allow the user to add a movie to his watchlist
-TODO: Optimize gradle build
 */
 
 class MovieGridActivity : LifecycleActivity(), AnkoLogger {

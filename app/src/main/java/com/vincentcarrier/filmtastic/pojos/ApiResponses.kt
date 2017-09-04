@@ -37,6 +37,4 @@ class RequestTokenResponse(@SerializedName("request_token") val requestToken: St
 
 class SessionIdResponse(@SerializedName("session_id") val sessionId: String?)
 
-class AccountDetailsResponse(val avatar: Gravatar)
-
-class Gravatar(val hash: String)
+class AccountDetailsResponse(val id: Int)

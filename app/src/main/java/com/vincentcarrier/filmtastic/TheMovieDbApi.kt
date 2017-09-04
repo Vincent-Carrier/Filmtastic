@@ -1,23 +1,22 @@
 package com.vincentcarrier.filmtastic
 
 
-import com.vincentcarrier.filmtastic.pojos.RequestTokenResponse
-import com.vincentcarrier.filmtastic.pojos.SessionIdResponse
-import com.vincentcarrier.filmtastic.pojos.TopMoviesResponse
-import com.vincentcarrier.filmtastic.pojos.TrailersResponse
+import com.vincentcarrier.filmtastic.pojos.*
+import io.reactivex.Completable
 import io.reactivex.Single
 import retrofit2.http.GET
+import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface TheMovieDbApi {
 
-	@GET("movie/{sortMethod}")
-	fun fetchTopMoviesResponse(@Path("sortMethod") sortingMethod: String,
+	@GET("movie/{sort_method}")
+	fun fetchTopMoviesResponse(@Path("sort_method") sortMethod: String,
 	                           @Query("page") page: Int): Single<TopMoviesResponse>
 
-	@GET("movie/{movieId}/videos")
-	fun fetchMovieTrailers(@Path("movieId") movieId: Int): Single<TrailersResponse>
+	@GET("movie/{movie_id}/videos")
+	fun fetchMovieTrailers(@Path("movie_id") movieId: Int): Single<TrailersResponse>
 
 	/* To log in to TheMovieDb, you must first fetch a request token, then go to
 * /authenticate/{REQUEST_TOKEN} and authorize the app. Finally, one must call
@@ -30,4 +29,22 @@ interface TheMovieDbApi {
 
 	@GET("authentication/session/new")
 	fun fetchSessionId(@Query("request_token") requestToken: String): Single<SessionIdResponse>
+
+	/* To add a movie to the watchlist, first create a watchlist, then get the account ID, then use
+	* it to get the list's ID, then add the movie to the watchlist*/
+	@POST("list")
+	fun createWatchList(@Query("session_id") sessionId: String): Completable
+
+	@GET("account")
+	fun fetchAccountDetails(@Query("session_id") sessionId: Int): Single<AccountDetailsResponse>
+
+	@GET("account/{account_id}/lists")
+	fun fetchUsersLists(@Path("account_id") accountId: Int, @Query("session_id") sessionId: Int)
+			: Single<List<List<Movie>>>
+
+	@POST("list/{list_id}/add_item")
+	fun addMovieToWatchList(@Path("list_id") listId: Int): Completable
+
+	@POST("list/{list_id}/remove_item")
+	fun deleteMoviefromWatchList(@Path("list_id") listId: Int): Completable
 }
