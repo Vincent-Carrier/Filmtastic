@@ -29,14 +29,9 @@ import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.toast
 
 
-/*
-TODO: Allow the user to add a movie to his watchlist
-*/
-
 class MovieGridActivity : LifecycleActivity(), AnkoLogger {
 
 	private lateinit var vm: MovieGridViewModel
-	private val app = application as Filmtastic
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
@@ -49,11 +44,11 @@ class MovieGridActivity : LifecycleActivity(), AnkoLogger {
 	override fun onStart() {
 		super.onStart()
 		if (vm.movies.isEmpty()) fetchAndBindMovies()
-		if (app.isLoggedIn()) {
+		if (!app().isLoggedIn()) {
 			CustomTabsClient.connectAndInitialize(this, "com.android.chrome")
 			vm.fetchSessionId()?.subscribeBy(
 				onSuccess = {
-					(application as Filmtastic).storeSessionId(it)
+					app().storeSessionId(it)
 					invalidateOptionsMenu()
 				},
 				onError = { toast(it.localizedMessage) }
@@ -69,7 +64,7 @@ class MovieGridActivity : LifecycleActivity(), AnkoLogger {
 
 	override fun onPrepareOptionsMenu(menu: Menu): Boolean {
 		menu.findItem(change_sort_method).title = getSortMethodMenuTitle()
-		menu.findItem(sign_in).isVisible = !app.isLoggedIn()
+		menu.findItem(sign_in).isVisible = !app().isLoggedIn()
 		return super.onPrepareOptionsMenu(menu)
 	}
 
@@ -129,6 +124,8 @@ class MovieGridActivity : LifecycleActivity(), AnkoLogger {
 	private fun getSortMethodMenuTitle(): String {
 		return "${this.getString(string.sorted_by)} : ${this.getString(vm.sortMethod.stringResource)}"
 	}
+
+	private fun app() = application as Filmtastic
 
 	inner class MovieAdapter : RecyclerView.Adapter<MovieAdapter.PosterViewHolder>() {
 

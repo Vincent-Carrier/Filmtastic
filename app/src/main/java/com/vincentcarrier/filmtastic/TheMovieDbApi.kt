@@ -4,10 +4,7 @@ package com.vincentcarrier.filmtastic
 import com.vincentcarrier.filmtastic.pojos.*
 import io.reactivex.Completable
 import io.reactivex.Single
-import retrofit2.http.GET
-import retrofit2.http.POST
-import retrofit2.http.Path
-import retrofit2.http.Query
+import retrofit2.http.*
 
 interface TheMovieDbApi {
 
@@ -30,20 +27,14 @@ interface TheMovieDbApi {
 	@GET("authentication/session/new")
 	fun fetchSessionId(@Query("request_token") requestToken: String): Single<SessionIdResponse>
 
-	/* To add a movie to the watchlist, first create a watchlist, then get the account ID, then use
-	* it to get the list's ID, then add the movie to the watchlist*/
-	@POST("list")
-	fun createWatchList(@Query("session_id") sessionId: String): Completable
-
 	@GET("account")
 	fun fetchAccountDetails(@Query("session_id") sessionId: String): Single<AccountDetailsResponse>
 
-	@GET("account/{account_id}/lists")
-	fun fetchUsersLists(@Path("account_id") accountId: Int, @Query("session_id") sessionId: String)
-			: Single<List<List<Movie>>>
-
-	@POST("list/{list_id}/add_item")
-	fun addMovieToWatchList(@Path("list_id") listId: String): Completable
+	@Headers("Content-Type: application/json;charset=utf-8")
+	@POST("account/{account_id}/watchlist")
+	fun addMovieToWatchList(@Body movie: MovieRequest,
+	                        @Path("account_id") accountId: Int,
+	                        @Query("session_id") sessionId: String): Completable
 
 	@POST("list/{list_id}/remove_item")
 	fun deleteMoviefromWatchList(@Path("list_id") listId: String): Completable

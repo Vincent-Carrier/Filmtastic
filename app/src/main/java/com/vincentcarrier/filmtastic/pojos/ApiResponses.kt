@@ -33,6 +33,10 @@ class Trailer(val name: String,
               val key: String,
               val site: String)
 
+class MovieRequest(@SerializedName("media_type") val mediaType: String = "movie",
+                   @SerializedName("media_id") val mediaId: Int,
+                   val watchlist: Boolean)
+
 class RequestTokenResponse(@SerializedName("request_token") val requestToken: String)
 
 class SessionIdResponse(@SerializedName("session_id") val sessionId: String?)

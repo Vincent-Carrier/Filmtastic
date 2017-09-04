@@ -6,13 +6,13 @@
     "apkInfo": {
       "type": "MAIN",
       "splits": [],
-      "versionCode": 3
+      "versionCode": 4
     },
     "path": "app-release.apk",
     "properties": {
       "packageId": "com.vincentcarrier.filmtastic",
       "split": "",
-      "minSdkVersion": "19"
+      "minSdkVersion": "21"
     }
   }
 ]

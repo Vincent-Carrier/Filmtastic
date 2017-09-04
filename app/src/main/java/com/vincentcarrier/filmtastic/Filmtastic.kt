@@ -1,12 +1,12 @@
 package com.vincentcarrier.filmtastic
 
 import android.app.Application
-import android.arch.lifecycle.LifecycleActivity
+import com.vincentcarrier.filmtastic.di.DaggerNetComponent
 import com.vincentcarrier.filmtastic.di.NetComponent
 
 class Filmtastic : Application() {
 
-	private val PREFS_NAME = "session_id"
+	private val PREFS_NAME = "prefs"
 
 	companion object {
 		lateinit var netComponent: NetComponent
@@ -18,12 +18,12 @@ class Filmtastic : Application() {
 	}
 
 	fun storeSessionId(sessionId: String) {
-		getSharedPreferences(PREFS_NAME, LifecycleActivity.MODE_PRIVATE)
+		getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
 				.edit().putString(PREFS_NAME, sessionId).apply()
 	}
 
 	fun retrieveSessionId(): String? {
-		return getSharedPreferences(PREFS_NAME, LifecycleActivity.MODE_PRIVATE)
+		return getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
 				.getString(PREFS_NAME, null)
 	}
 

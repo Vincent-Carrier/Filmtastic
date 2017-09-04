@@ -15,8 +15,8 @@ android {
         applicationId "com.vincentcarrier.filmtastic"
         minSdkVersion 21
         targetSdkVersion 26
-        versionCode 3
-        versionName "1.0"
+        versionCode 4
+        versionName "2.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         signingConfigs {
             config {
@@ -91,7 +91,7 @@ dependencies {
     testImplementation "org.robolectric:robolectric:3.4.2"
 
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.0'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-contrib:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
         exclude group: 'com.android.support', module: 'support-v4'
