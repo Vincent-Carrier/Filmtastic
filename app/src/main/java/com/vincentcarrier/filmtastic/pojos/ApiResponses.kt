@@ -32,8 +32,7 @@ data class Movie(@SerializedName("id") val id: Int,
 class TrailersResponse(@SerializedName("results") val results: List<Trailer>?)
 
 class Trailer(@SerializedName("name") val name: String,
-              @SerializedName("key") val key: String,
-              @SerializedName("site") val site: String)
+              @SerializedName("key") val key: String)
 
 class MovieRequest(@SerializedName("media_type") val mediaType: String = "movie",
                    @SerializedName("media_id") val mediaId: Int,
