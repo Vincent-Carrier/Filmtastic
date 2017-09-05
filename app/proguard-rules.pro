@@ -59,7 +59,7 @@
 -keepclassmembers enum * { *; }
 
 # For @SerializedName
--keep class com.vincentcarrier.filmtastic.pojos.** { *; }
+-keep class com.vincentcarrier.filmtastic.pojos.**
 
 ##--- End:GSON ----
 
@@ -86,3 +86,14 @@
     public static ** test();
 }
 -dontwarn javax.annotation.**
+
+
+# Remove log calls
+-assumenosideeffects class android.util.Log {
+    public static boolean isLoggable(java.lang.String, int);
+    public static int v(...);
+    public static int i(...);
+    public static int w(...);
+    public static int d(...);
+    public static int e(...);
+}
