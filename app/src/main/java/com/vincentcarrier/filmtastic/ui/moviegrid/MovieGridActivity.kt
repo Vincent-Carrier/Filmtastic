@@ -1,97 +1,131 @@
 package com.vincentcarrier.filmtastic.ui.moviegrid
 
+import android.arch.lifecycle.LifecycleActivity
 import android.arch.lifecycle.ViewModelProviders
-import android.content.Intent
-import android.content.res.Configuration
+import android.content.res.Configuration.ORIENTATION_PORTRAIT
+import android.net.Uri
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
+import android.support.customtabs.CustomTabsClient
+import android.support.customtabs.CustomTabsIntent
+import android.support.v4.content.ContextCompat
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.RecyclerView.ViewHolder
 import android.view.*
 import android.view.View.DRAWING_CACHE_QUALITY_HIGH
-import com.livinglifetechway.k4kotlin.hide
-import com.livinglifetechway.k4kotlin.hideViews
-import com.livinglifetechway.k4kotlin.show
-import com.livinglifetechway.k4kotlin.showViews
+import com.trello.rxlifecycle2.android.lifecycle.kotlin.bindToLifecycle
+import com.vincentcarrier.filmtastic.Filmtastic
 import com.vincentcarrier.filmtastic.R
+import com.vincentcarrier.filmtastic.R.id.change_sort_method
+import com.vincentcarrier.filmtastic.R.id.sign_in
 import com.vincentcarrier.filmtastic.R.string
-import com.vincentcarrier.filmtastic.pojos.SortingMethod.popular
-import com.vincentcarrier.filmtastic.pojos.SortingMethod.top_rated
 import com.vincentcarrier.filmtastic.ui.details.DetailsActivity
-import com.vincentcarrier.filmtastic.ui.loadImageInto
+import com.vincentcarrier.filmtastic.ui.loadPoster
 import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.activity_movie_grid.*
 import kotlinx.android.synthetic.main.movie_grid_item.view.*
 import org.jetbrains.anko.AnkoLogger
-import org.jetbrains.anko.debug
+import org.jetbrains.anko.intentFor
+import org.jetbrains.anko.toast
 
-// TODO: Implement RxLifecycle
 
-class MovieGridActivity : AppCompatActivity(), AnkoLogger {
+class MovieGridActivity : LifecycleActivity(), AnkoLogger {
 
 	private lateinit var vm: MovieGridViewModel
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 		setContentView(R.layout.activity_movie_grid)
-		initializeMovieGrid()
 		vm = ViewModelProviders.of(this).get(MovieGridViewModel::class.java)
+		setActionBar(toolbar)
+		setUpMovieGrid()
+	}
+
+	override fun onStart() {
+		super.onStart()
 		if (vm.movies.isEmpty()) fetchAndBindMovies()
+		if (!app().isLoggedIn()) {
+			CustomTabsClient.connectAndInitialize(this, "com.android.chrome")
+			vm.fetchSessionId()?.subscribeBy(
+				onSuccess = {
+					app().storeSessionId(it)
+					invalidateOptionsMenu()
+				},
+				onError = { toast(it.localizedMessage) }
+			)
+		}
 	}
 
 	override fun onCreateOptionsMenu(menu: Menu): Boolean {
 		menuInflater.inflate(R.menu.main, menu)
-		val sortMethodMenu = menu.findItem(R.id.change_sorting_method)
-		sortMethodMenu.title = "${getString(string.sorted_by)} : ${getString(vm.sortMethod.stringResource)}"
+		onPrepareOptionsMenu(menu)
 		return true
+	}
+
+	override fun onPrepareOptionsMenu(menu: Menu): Boolean {
+		menu.findItem(change_sort_method).title = getSortMethodMenuTitle()
+		menu.findItem(sign_in).isVisible = !app().isLoggedIn()
+		return super.onPrepareOptionsMenu(menu)
 	}
 
 	override fun onOptionsItemSelected(item: MenuItem): Boolean {
 		when (item.itemId) {
-			R.id.change_sorting_method -> {
-				when (vm.sortMethod) {
-					popular -> vm.sortMethod = top_rated
-					else -> vm.sortMethod = popular
-				}
-				item.title = "${getString(string.sorted_by)} : ${getString(vm.sortMethod.stringResource)}"
+			change_sort_method -> {
+				vm.changeSortMethod()
+				item.title = getSortMethodMenuTitle()
 				fetchAndBindMovies()
+			}
+			sign_in -> {
+				vm.fetchRequestToken().subscribeBy(
+						onSuccess = {
+							vm.requestToken = it
+							val BASE_URL = "https://www.themoviedb.org/authenticate/"
+							val browser = CustomTabsIntent.Builder()
+									.setToolbarColor(ContextCompat.getColor(this, R.color.chromeToolbar))
+									.build()
+							browser.launchUrl(this, Uri.parse(BASE_URL + it))
+						},
+						onError = { toast(it.localizedMessage) }
+				)
 			}
 		}
 		return super.onOptionsItemSelected(item)
 	}
 
-	private fun initializeMovieGrid() {
-		movieGrid.apply {
-			setHasFixedSize(true)
-			isDrawingCacheEnabled = true
-			setItemViewCacheSize(20)
-			drawingCacheQuality = DRAWING_CACHE_QUALITY_HIGH
-			val isPortrait = context.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT
-			layoutManager = GridLayoutManager(this@MovieGridActivity, if (isPortrait) 2 else 4)
-			clearOnScrollListeners()
-			addOnScrollListener(InfiniteScrollListener({ fetchAndBindMovies() }, layoutManager as GridLayoutManager))
+	private fun setUpMovieGrid() {
+		with(movieGrid) {
 			adapter = MovieAdapter()
+
+			val isPortrait = (context.resources.configuration.orientation == ORIENTATION_PORTRAIT)
+			layoutManager = GridLayoutManager(this@MovieGridActivity, if (isPortrait) 2 else 4)
+
+			addOnScrollListener(InfiniteScrollListener({ fetchAndBindMovies() }, layoutManager as GridLayoutManager))
+
+			setHasFixedSize(true)
+			setItemViewCacheSize(20)
+			isDrawingCacheEnabled = true
+			drawingCacheQuality = DRAWING_CACHE_QUALITY_HIGH
 		}
 	}
 
 	private fun fetchAndBindMovies() {
-		vm.fetchTopMoviesResponse()
+		vm.fetchMovies()
+				.bindToLifecycle(this)
 				.subscribeBy(
 						onSuccess = {
-							vm.movies.addAll(it.results)
+							vm.movies.addAll(it)
 							vm.pageCount += 1
 							movieGrid.adapter.notifyDataSetChanged()
-							movieGrid.show()
-							hideViews(movieGridLoadingSpinner, errorIcon, errorMessage)
 						},
-						onError = {
-							debug { it }
-							movieGrid.hide()
-							showViews(errorIcon, errorMessage)
-						}
+						onError = { toast(it.localizedMessage) }
 				)
 	}
+
+	private fun getSortMethodMenuTitle(): String {
+		return "${this.getString(string.sorted_by)} : ${this.getString(vm.sortMethod.stringResource)}"
+	}
+
+	private fun app() = application as Filmtastic
 
 	inner class MovieAdapter : RecyclerView.Adapter<MovieAdapter.PosterViewHolder>() {
 
@@ -105,11 +139,12 @@ class MovieGridActivity : AppCompatActivity(), AnkoLogger {
 
 		override fun onBindViewHolder(holder: MovieAdapter.PosterViewHolder, position: Int) {
 			val movie = vm.movies[position]
-			loadImageInto(movie, holder.itemView.poster)
-			holder.itemView.contentDescription = movie.title
-			holder.itemView.setOnClickListener {
-				startActivity(Intent(this@MovieGridActivity, DetailsActivity::class.java)
-						.putExtra("movie", movie))
+			with(holder.itemView) {
+				poster.loadPoster(movie)
+				contentDescription = movie.title
+				setOnClickListener {
+					startActivity(intentFor<DetailsActivity>("movie" to movie))
+				}
 			}
 		}
 

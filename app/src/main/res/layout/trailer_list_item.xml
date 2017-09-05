@@ -16,10 +16,11 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_play"/>
+        android:src="@drawable/ic_play"/>
 
     <TextView
         android:id="@+id/trailerName"
+        android:textColor="@android:color/black"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:layout_marginBottom="16dp"

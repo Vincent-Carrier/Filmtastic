@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#AEEA00</color>
-    <color name="colorPrimaryDark">#AEEA00</color>
-    <color name="colorAccent">#FF4081</color>
+    <color name="colorPrimary">#66BB6A</color>
+    <color name="colorPrimaryDark">#338A3E</color>
+    <color name="colorAccent">#F44336</color>
+    <color name="chromeToolbar">#081C24</color>
 </resources>
