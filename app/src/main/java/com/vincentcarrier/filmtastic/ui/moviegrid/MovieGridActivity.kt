@@ -45,6 +45,7 @@ class MovieGridActivity : LifecycleActivity(), AnkoLogger {
 		super.onStart()
 		if (vm.movies.isEmpty()) fetchAndBindMovies()
 		if (!app().isLoggedIn()) {
+			// Warm up the in-app browser to reduce loading time
 			CustomTabsClient.connectAndInitialize(this, "com.android.chrome")
 			vm.fetchSessionId()?.subscribeBy(
 				onSuccess = {
@@ -79,10 +80,10 @@ class MovieGridActivity : LifecycleActivity(), AnkoLogger {
 				vm.fetchRequestToken().subscribeBy(
 						onSuccess = {
 							vm.requestToken = it
-							val BASE_URL = "https://www.themoviedb.org/authenticate/"
 							val browser = CustomTabsIntent.Builder()
 									.setToolbarColor(ContextCompat.getColor(this, R.color.chromeToolbar))
 									.build()
+							val BASE_URL = "https://www.themoviedb.org/authenticate/"
 							browser.launchUrl(this, Uri.parse(BASE_URL + it))
 						},
 						onError = { toast(it.localizedMessage) }
@@ -93,13 +94,13 @@ class MovieGridActivity : LifecycleActivity(), AnkoLogger {
 	}
 
 	private fun setUpMovieGrid() {
+		val isPortrait = (resources.configuration.orientation == ORIENTATION_PORTRAIT)
 		with(movieGrid) {
 			adapter = MovieAdapter()
-
-			val isPortrait = (context.resources.configuration.orientation == ORIENTATION_PORTRAIT)
 			layoutManager = GridLayoutManager(this@MovieGridActivity, if (isPortrait) 2 else 4)
 
-			addOnScrollListener(InfiniteScrollListener({ fetchAndBindMovies() }, layoutManager as GridLayoutManager))
+			addOnScrollListener(
+					InfiniteScrollListener({ fetchAndBindMovies() }, layoutManager as GridLayoutManager))
 
 			setHasFixedSize(true)
 			setItemViewCacheSize(20)
@@ -113,16 +114,17 @@ class MovieGridActivity : LifecycleActivity(), AnkoLogger {
 				.bindToLifecycle(this)
 				.subscribeBy(
 						onSuccess = {
+							val oldSize = vm.movies.size
 							vm.movies.addAll(it)
 							vm.pageCount += 1
-							movieGrid.adapter.notifyDataSetChanged()
+							movieGrid.adapter.notifyItemRangeInserted(oldSize, it.size)
 						},
 						onError = { toast(it.localizedMessage) }
 				)
 	}
 
 	private fun getSortMethodMenuTitle(): String {
-		return "${this.getString(string.sorted_by)} : ${this.getString(vm.sortMethod.stringResource)}"
+		return "${getString(string.sorted_by)} : ${getString(vm.sortMethod.stringResource)}"
 	}
 
 	private fun app() = application as Filmtastic
@@ -131,7 +133,8 @@ class MovieGridActivity : LifecycleActivity(), AnkoLogger {
 
 		inner class PosterViewHolder(itemView: View?) : ViewHolder(itemView)
 
-		override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MovieAdapter.PosterViewHolder {
+		override fun onCreateViewHolder(parent: ViewGroup, viewType: Int):
+				MovieAdapter.PosterViewHolder {
 			val view = LayoutInflater.from(parent.context)
 					.inflate(R.layout.movie_grid_item, parent, false)
 			return PosterViewHolder(view)

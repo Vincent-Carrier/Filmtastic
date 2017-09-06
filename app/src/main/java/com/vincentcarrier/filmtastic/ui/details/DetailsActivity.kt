@@ -47,7 +47,6 @@ class DetailsActivity : LifecycleActivity(), AnkoLogger {
 							trailerList.adapter.notifyDataSetChanged()
 						},
 						onError = {
-							vm.trailers = emptyList()
 							toast(it.localizedMessage)
 						}
 				)
@@ -105,8 +104,8 @@ class DetailsActivity : LifecycleActivity(), AnkoLogger {
 			val trailer = vm.trailers[position]
 			val BASE_URL = "https://www.youtube.com/watch?v="
 			with(holder.itemView) {
-				holder.itemView.trailerName.text = trailer.name
-				holder.itemView.setOnClickListener { browse(BASE_URL + trailer.key) }
+				trailerName.text = trailer.name
+				setOnClickListener { browse(BASE_URL + trailer.key) }
 			}
 		}
 
