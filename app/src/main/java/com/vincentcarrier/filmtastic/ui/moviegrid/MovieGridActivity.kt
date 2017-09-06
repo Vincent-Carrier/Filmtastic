@@ -72,6 +72,7 @@ class MovieGridActivity : LifecycleActivity(), AnkoLogger {
 	override fun onOptionsItemSelected(item: MenuItem): Boolean {
 		when (item.itemId) {
 			change_sort_method -> {
+				movieGrid.adapter.notifyItemRangeRemoved(0, vm.movies.size)
 				vm.changeSortMethod()
 				item.title = getSortMethodMenuTitle()
 				fetchAndBindMovies()
