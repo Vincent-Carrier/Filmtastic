@@ -47,7 +47,6 @@ class DetailsActivity : LifecycleActivity(), AnkoLogger {
 							trailerList.adapter.notifyDataSetChanged()
 						},
 						onError = {
-							vm.trailers = emptyList()
 							toast(it.localizedMessage)
 						}
 				)
@@ -103,11 +102,11 @@ class DetailsActivity : LifecycleActivity(), AnkoLogger {
 
 		override fun onBindViewHolder(holder: TrailerViewHolder, position: Int) {
 			val trailer = vm.trailers[position]
-			holder.itemView.trailerName.text = trailer.name
-			val baseUrl =
-					if (trailer.site == "YouTube") "https://www.youtube.com/watch?v="
-					else "https://vimeo.com/"
-			holder.itemView.setOnClickListener { browse(baseUrl + trailer.key) }
+			val BASE_URL = "https://www.youtube.com/watch?v="
+			with(holder.itemView) {
+				trailerName.text = trailer.name
+				setOnClickListener { browse(BASE_URL + trailer.key) }
+			}
 		}
 
 		override fun getItemCount(): Int = vm.trailers.size
