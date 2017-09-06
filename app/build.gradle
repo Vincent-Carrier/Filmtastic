@@ -15,8 +15,8 @@ android {
         applicationId "com.vincentcarrier.filmtastic"
         minSdkVersion 21
         targetSdkVersion 26
-        versionCode 5
-        versionName "2.0.1"
+        versionCode 7
+        versionName "2.0.3"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         signingConfigs {
             config {
@@ -31,6 +31,7 @@ android {
         release {
             shrinkResources true
             minifyEnabled true
+            zipAlignEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'),
                     'proguard-rules.pro'
             signingConfig signingConfigs.config
@@ -86,7 +87,7 @@ dependencies {
 
     testImplementation 'org.mockito:mockito-core:2.8.47'
     testImplementation "com.nhaarman:mockito-kotlin-kt1.1:1.5.0"
-    testImplementation 'org.amshove.kluent:kluent:1.28'
+    testImplementation 'org.amshove.kluent:kluent-android:1.28'
     testImplementation 'junit:junit:4.12'
     testImplementation "org.robolectric:robolectric:3.4.2"
 
