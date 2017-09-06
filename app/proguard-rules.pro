@@ -58,8 +58,7 @@
 # keep enum so gson can deserialize it
 -keepclassmembers enum * { *; }
 
-# For @SerializedName
--keep class com.vincentcarrier.filmtastic.pojos.**
+-keep class com.vincentcarrier.filmtastic.pojos.** { *; }
 
 ##--- End:GSON ----
 

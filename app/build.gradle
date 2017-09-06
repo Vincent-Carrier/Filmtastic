@@ -15,8 +15,8 @@ android {
         applicationId "com.vincentcarrier.filmtastic"
         minSdkVersion 21
         targetSdkVersion 26
-        versionCode 7
-        versionName "2.0.3"
+        versionCode 8
+        versionName "2.0.4"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         signingConfigs {
             config {
@@ -35,6 +35,13 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'),
                     'proguard-rules.pro'
             signingConfig signingConfigs.config
+        }
+        debug {
+            shrinkResources true
+            minifyEnabled true
+            zipAlignEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'),
+                    'proguard-rules.pro'
         }
     }
     testOptions {

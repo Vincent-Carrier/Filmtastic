@@ -7,16 +7,16 @@ import paperparcel.PaperParcel
 import paperparcel.PaperParcelable
 
 @Keep
-class TopMoviesResponse(val results: List<Movie>)
+class TopMoviesResponse(@SerializedName("results") val results: List<Movie>)
 
 @Keep
 @PaperParcel
-data class Movie(val id: Int,
-                 val title: String,
+data class Movie(@SerializedName("id") val id: Int,
+                 @SerializedName("title") val title: String,
                  @SerializedName("poster_path") val posterPath: String?,
                  @SerializedName("release_date") val releaseDate: String?,
                  @SerializedName("vote_average") val voteAverage: Double?,
-                 val overview: String?) : PaperParcelable {
+                 @SerializedName("overview") val overview: String?) : PaperParcelable {
 	companion object {
 		@JvmField
 		val CREATOR = PaperParcelMovie.CREATOR
@@ -31,16 +31,16 @@ data class Movie(val id: Int,
 }
 
 @Keep
-class TrailersResponse(val results: List<Trailer>?)
+class TrailersResponse(@SerializedName("results") val results: List<Trailer>?)
 
 @Keep
-class Trailer(val name: String,
-              val key: String)
+class Trailer(@SerializedName("name") val name: String,
+              @SerializedName("key") val key: String)
 
 @Keep
 class MovieRequest(@SerializedName("media_type") val mediaType: String = "movie",
                    @SerializedName("media_id") val mediaId: Int,
-                   val watchlist: Boolean)
+                   @SerializedName("watchlist") val watchlist: Boolean)
 
 @Keep
 class RequestTokenResponse(@SerializedName("request_token") val requestToken: String)
@@ -49,4 +49,4 @@ class RequestTokenResponse(@SerializedName("request_token") val requestToken: St
 class SessionIdResponse(@SerializedName("session_id") val sessionId: String?)
 
 @Keep
-class AccountDetailsResponse(val id: Int)
+class AccountDetailsResponse(@SerializedName("id") val id: Int)
