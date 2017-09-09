@@ -38,9 +38,9 @@ class Trailer(@SerializedName("name") val name: String,
               @SerializedName("key") val key: String)
 
 @Keep
-class MovieRequest(@SerializedName("media_type") val mediaType: String = "movie",
-                   @SerializedName("media_id") val mediaId: Int,
-                   @SerializedName("watchlist") val watchlist: Boolean)
+class MovieRequest(@SerializedName("media_id") val mediaId: Int,
+                   @SerializedName("media_type") val mediaType: String = "movie",
+                   @SerializedName("watchlist") val watchlist: Boolean = true)
 
 @Keep
 class RequestTokenResponse(@SerializedName("request_token") val requestToken: String)

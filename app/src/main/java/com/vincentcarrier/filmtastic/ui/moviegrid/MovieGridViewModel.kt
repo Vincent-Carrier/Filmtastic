@@ -6,8 +6,8 @@ import android.arch.lifecycle.AndroidViewModel
 import com.vincentcarrier.filmtastic.Filmtastic
 import com.vincentcarrier.filmtastic.TheMovieDbApi
 import com.vincentcarrier.filmtastic.pojos.*
-import com.vincentcarrier.filmtastic.pojos.SortingMethod.popular
-import com.vincentcarrier.filmtastic.pojos.SortingMethod.top_rated
+import com.vincentcarrier.filmtastic.pojos.SortMethod.popular
+import com.vincentcarrier.filmtastic.pojos.SortMethod.top_rated
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import javax.inject.Inject
@@ -22,7 +22,7 @@ class MovieGridViewModel(app: Application) : AndroidViewModel(app) {
 
 	internal var movies: MutableList<Movie> = mutableListOf()
 	internal var pageCount = 0
-	internal var sortMethod = SortingMethod.popular
+	internal var sortMethod = SortMethod.popular
 		set(value) {
 			field = value
 			movies.clear()

@@ -13,20 +13,18 @@ import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.RecyclerView.ViewHolder
 import android.view.*
 import android.view.View.DRAWING_CACHE_QUALITY_HIGH
-import com.trello.rxlifecycle2.android.lifecycle.kotlin.bindToLifecycle
 import com.vincentcarrier.filmtastic.Filmtastic
 import com.vincentcarrier.filmtastic.R
 import com.vincentcarrier.filmtastic.R.id.change_sort_method
 import com.vincentcarrier.filmtastic.R.id.sign_in
 import com.vincentcarrier.filmtastic.R.string
 import com.vincentcarrier.filmtastic.ui.details.DetailsActivity
+import com.vincentcarrier.filmtastic.ui.execute
 import com.vincentcarrier.filmtastic.ui.loadPoster
-import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.activity_movie_grid.*
 import kotlinx.android.synthetic.main.movie_grid_item.view.*
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.intentFor
-import org.jetbrains.anko.toast
 
 
 class MovieGridActivity : LifecycleActivity(), AnkoLogger {
@@ -47,13 +45,10 @@ class MovieGridActivity : LifecycleActivity(), AnkoLogger {
 		if (!app().isLoggedIn()) {
 			// Warm up the in-app browser to reduce loading time
 			CustomTabsClient.connectAndInitialize(this, "com.android.chrome")
-			vm.fetchSessionId()?.subscribeBy(
-				onSuccess = {
-					app().storeSessionId(it)
-					invalidateOptionsMenu()
-				},
-				onError = { toast(it.localizedMessage) }
-			)
+			vm.fetchSessionId()?.execute(this) {
+				app().storeSessionId(it)
+				invalidateOptionsMenu()
+			}
 		}
 	}
 
@@ -78,17 +73,14 @@ class MovieGridActivity : LifecycleActivity(), AnkoLogger {
 				fetchAndBindMovies()
 			}
 			sign_in -> {
-				vm.fetchRequestToken().subscribeBy(
-						onSuccess = {
-							vm.requestToken = it
-							val browser = CustomTabsIntent.Builder()
-									.setToolbarColor(ContextCompat.getColor(this, R.color.chromeToolbar))
-									.build()
-							val BASE_URL = "https://www.themoviedb.org/authenticate/"
-							browser.launchUrl(this, Uri.parse(BASE_URL + it))
-						},
-						onError = { toast(it.localizedMessage) }
-				)
+				vm.fetchRequestToken().execute(this) {
+					vm.requestToken = it
+					val browser = CustomTabsIntent.Builder()
+							.setToolbarColor(ContextCompat.getColor(this, R.color.chromeToolbar))
+							.build()
+					val BASE_URL = "https://www.themoviedb.org/authenticate/"
+					browser.launchUrl(this, Uri.parse(BASE_URL + it))
+				}
 			}
 		}
 		return super.onOptionsItemSelected(item)
@@ -111,17 +103,12 @@ class MovieGridActivity : LifecycleActivity(), AnkoLogger {
 	}
 
 	private fun fetchAndBindMovies() {
-		vm.fetchMovies()
-				.bindToLifecycle(this)
-				.subscribeBy(
-						onSuccess = {
-							val oldSize = vm.movies.size
-							vm.movies.addAll(it)
-							vm.pageCount += 1
-							movieGrid.adapter.notifyItemRangeInserted(oldSize, it.size)
-						},
-						onError = { toast(it.localizedMessage) }
-				)
+		vm.fetchMovies().execute(this) {
+			val oldSize = vm.movies.size
+			vm.movies.addAll(it)
+			vm.pageCount += 1
+			movieGrid.adapter.notifyItemRangeInserted(oldSize, it.size)
+		}
 	}
 
 	private fun getSortMethodMenuTitle(): String {
