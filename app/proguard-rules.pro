@@ -86,6 +86,12 @@
 }
 -dontwarn javax.annotation.**
 
+# PaperParcel
+-keep class **.PaperParcel* {
+  static void writeToParcel(...);
+}
+
+-keep @paperparcel.PaperParcel class *
 
 # Remove log calls
 -assumenosideeffects class android.util.Log {

@@ -1,15 +1,12 @@
 package com.vincentcarrier.filmtastic.pojos
 
 import android.os.Parcel
-import android.support.annotation.Keep
 import com.google.gson.annotations.SerializedName
 import paperparcel.PaperParcel
 import paperparcel.PaperParcelable
 
-@Keep
 class TopMoviesResponse(@SerializedName("results") val results: List<Movie>)
 
-@Keep
 @PaperParcel
 data class Movie(@SerializedName("id") val id: Int,
                  @SerializedName("title") val title: String,
@@ -30,23 +27,17 @@ data class Movie(@SerializedName("id") val id: Int,
 	}
 }
 
-@Keep
 class TrailersResponse(@SerializedName("results") val results: List<Trailer>?)
 
-@Keep
 class Trailer(@SerializedName("name") val name: String,
               @SerializedName("key") val key: String)
 
-@Keep
 class MovieRequest(@SerializedName("media_id") val mediaId: Int,
                    @SerializedName("media_type") val mediaType: String = "movie",
                    @SerializedName("watchlist") val watchlist: Boolean = true)
 
-@Keep
 class RequestTokenResponse(@SerializedName("request_token") val requestToken: String)
 
-@Keep
 class SessionIdResponse(@SerializedName("session_id") val sessionId: String?)
 
-@Keep
 class AccountDetailsResponse(@SerializedName("id") val id: Int)

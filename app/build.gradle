@@ -12,6 +12,16 @@ def keystorePropertiesFile = rootProject.file("keystore.properties")
 def keystoreProperties = new Properties()
 keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 
+project.android.buildTypes.all { buildType ->
+    buildType.javaCompileOptions.annotationProcessorOptions.arguments =
+            [
+                    // Validation is disabled in production to remove the runtime overhead
+                    validateEpoxyModelUsage     : String.valueOf(buildType.name == 'debug'),
+                    requireHashCodeInEpoxyModels: "true",
+                    requireAbstractEpoxyModels  : "true",
+            ]
+}
+
 android {
     compileSdkVersion 26
     buildToolsVersion "26.0.1"
@@ -19,8 +29,8 @@ android {
         applicationId "com.vincentcarrier.filmtastic"
         minSdkVersion 21
         targetSdkVersion 26
-        versionCode 9
-        versionName "2.0.5"
+        versionCode 10
+        versionName "3.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         signingConfigs {
             config {
