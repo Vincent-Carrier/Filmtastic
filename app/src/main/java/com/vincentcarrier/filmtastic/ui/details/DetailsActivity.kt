@@ -3,10 +3,13 @@ package com.vincentcarrier.filmtastic.ui.details
 import android.arch.lifecycle.LifecycleActivity
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
-import com.vincentcarrier.filmtastic.Filmtastic
+import com.airbnb.epoxy.Typed2EpoxyController
+import com.vincentcarrier.filmtastic.FilmtasticApp
 import com.vincentcarrier.filmtastic.R
 import com.vincentcarrier.filmtastic.R.string
+import com.vincentcarrier.filmtastic.pojos.Movie
 import com.vincentcarrier.filmtastic.pojos.MovieRequest
+import com.vincentcarrier.filmtastic.pojos.Trailer
 import com.vincentcarrier.filmtastic.ui.execute
 import kotlinx.android.synthetic.main.activity_details.*
 import kotlinx.android.synthetic.main.movie_details.*
@@ -48,6 +51,21 @@ class DetailsActivity : LifecycleActivity(), AnkoLogger {
 		}
 	}
 
-	private fun isLoggedIn() = (application as Filmtastic).isLoggedIn()
+	private fun isLoggedIn() = (application as FilmtasticApp).isLoggedIn()
+
+	/* Airbnb's RecyclerView.Adapter replacement */
+	inner class DetailsController(movie: Movie) : Typed2EpoxyController<Movie, List<Trailer>>() {
+		private val detailsModel = DetailsModel_(movie)
+		internal var trailers = emptyList<Trailer>()
+			set(value) {
+				field = value
+				requestModelBuild()
+			}
+
+		override fun buildModels(movie: Movie, trailers: List<Trailer>) {
+			detailsModel.id("details").addTo(this)
+			for (trailer in trailers) TrailerModel_(trailer).id(trailer.key).addTo(this)
+		}
+	}
 }
 

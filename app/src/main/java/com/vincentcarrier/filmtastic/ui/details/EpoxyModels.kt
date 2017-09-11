@@ -5,7 +5,6 @@ import android.support.constraint.ConstraintLayout
 import com.airbnb.epoxy.EpoxyAttribute
 import com.airbnb.epoxy.EpoxyModel
 import com.airbnb.epoxy.EpoxyModelClass
-import com.airbnb.epoxy.Typed2EpoxyController
 import com.vincentcarrier.filmtastic.R
 import com.vincentcarrier.filmtastic.pojos.Movie
 import com.vincentcarrier.filmtastic.pojos.Trailer
@@ -13,22 +12,6 @@ import com.vincentcarrier.filmtastic.ui.loadPoster
 import kotlinx.android.synthetic.main.movie_details.view.*
 import kotlinx.android.synthetic.main.trailer_list_item.view.*
 import org.jetbrains.anko.browse
-
-/* Airbnb's RecyclerView.Adapter replacement */
-class DetailsController(movie: Movie) : Typed2EpoxyController<Movie, List<Trailer>>() {
-	private val detailsModel = DetailsModel_(movie)
-	internal var trailers = emptyList<Trailer>()
-		set(value) {
-			field = value
-			requestModelBuild()
-		}
-
-	override fun buildModels(movie: Movie, trailers: List<Trailer>) {
-		detailsModel.id("details").addTo(this)
-		for (trailer in trailers) TrailerModel_(trailer).id(trailer.key).addTo(this)
-	}
-}
-
 
 @EpoxyModelClass(layout = R.layout.trailer_list_item)
 abstract class TrailerModel(trailer: Trailer) : EpoxyModel<ConstraintLayout>() {

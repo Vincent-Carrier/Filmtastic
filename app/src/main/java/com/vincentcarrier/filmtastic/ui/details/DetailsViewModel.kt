@@ -2,7 +2,7 @@ package com.vincentcarrier.filmtastic.ui.details
 
 import android.app.Application
 import android.arch.lifecycle.AndroidViewModel
-import com.vincentcarrier.filmtastic.Filmtastic
+import com.vincentcarrier.filmtastic.FilmtasticApp
 import com.vincentcarrier.filmtastic.TheMovieDbApi
 import com.vincentcarrier.filmtastic.pojos.*
 import io.reactivex.Completable
@@ -17,7 +17,7 @@ class DetailsViewModel(app: Application) : AndroidViewModel(app) {
 	internal var accountId: Int? = null
 
 	init {
-		Filmtastic.netComponent.inject(this)
+		FilmtasticApp.netComponent.inject(this)
 	}
 
 	lateinit internal var movie: Movie
@@ -40,5 +40,5 @@ class DetailsViewModel(app: Application) : AndroidViewModel(app) {
 				.map(AccountDetailsResponse::id)
 	}
 
-	private fun sessionId() = getApplication<Filmtastic>().retrieveSessionId()
+	private fun sessionId() = getApplication<FilmtasticApp>().retrieveSessionId()
 }

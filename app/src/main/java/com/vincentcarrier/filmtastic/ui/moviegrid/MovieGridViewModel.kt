@@ -3,7 +3,7 @@ package com.vincentcarrier.filmtastic.ui.moviegrid
 
 import android.app.Application
 import android.arch.lifecycle.AndroidViewModel
-import com.vincentcarrier.filmtastic.Filmtastic
+import com.vincentcarrier.filmtastic.FilmtasticApp
 import com.vincentcarrier.filmtastic.TheMovieDbApi
 import com.vincentcarrier.filmtastic.pojos.*
 import com.vincentcarrier.filmtastic.pojos.SortMethod.popular
@@ -17,7 +17,7 @@ class MovieGridViewModel(app: Application) : AndroidViewModel(app) {
 	@Inject lateinit var api: TheMovieDbApi
 
 	init {
-		Filmtastic.netComponent.inject(this)
+		FilmtasticApp.netComponent.inject(this)
 	}
 
 	internal var movies: MutableList<Movie> = mutableListOf()

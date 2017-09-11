@@ -1,10 +1,13 @@
 package com.vincentcarrier.filmtastic
 
 import android.app.Application
+import com.bumptech.glide.annotation.GlideModule
+import com.bumptech.glide.module.AppGlideModule
 import com.vincentcarrier.filmtastic.di.DaggerNetComponent
 import com.vincentcarrier.filmtastic.di.NetComponent
 
-class Filmtastic : Application() {
+
+class FilmtasticApp : Application() {
 
 	private val PREFS_NAME = "prefs"
 
@@ -29,3 +32,6 @@ class Filmtastic : Application() {
 
 	fun isLoggedIn() = (retrieveSessionId() != null)
 }
+
+@GlideModule
+class MyAppGlideModule : AppGlideModule()

@@ -2,8 +2,9 @@ package com.vincentcarrier.filmtastic.ui
 
 import android.arch.lifecycle.LifecycleActivity
 import android.widget.ImageView
-import com.squareup.picasso.Picasso
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
 import com.trello.rxlifecycle2.android.lifecycle.kotlin.bindToLifecycle
+import com.vincentcarrier.filmtastic.GlideApp
 import com.vincentcarrier.filmtastic.R
 import com.vincentcarrier.filmtastic.pojos.Movie
 import io.reactivex.Completable
@@ -21,12 +22,12 @@ private val POSTER_WIDTHS = mapOf<String, String>(
 		"original" to "original")
 
 
-// TODO: Replace with Glide and load thumbnail preview
-// https://futurestud.io/tutorials/glide-thumbnails
 internal fun ImageView.loadPoster(movie: Movie) {
-	Picasso.with(this.context)
-			.load("https://image.tmdb.org/t/p/w${POSTER_WIDTHS["xxlarge"] + movie.posterPath}")
+	val BASE_URL = "https://image.tmdb.org/t/p/w"
+	GlideApp.with(this.context)
+			.load(BASE_URL + POSTER_WIDTHS["xxlarge"] + movie.posterPath)
 			.placeholder(R.drawable.poster_placeholder)
+			.transition(withCrossFade())
 			.into(this)
 }
 

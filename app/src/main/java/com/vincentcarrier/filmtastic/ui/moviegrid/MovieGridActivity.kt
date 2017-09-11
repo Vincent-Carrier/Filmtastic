@@ -13,7 +13,7 @@ import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.RecyclerView.ViewHolder
 import android.view.*
 import android.view.View.DRAWING_CACHE_QUALITY_HIGH
-import com.vincentcarrier.filmtastic.Filmtastic
+import com.vincentcarrier.filmtastic.FilmtasticApp
 import com.vincentcarrier.filmtastic.R
 import com.vincentcarrier.filmtastic.R.id.change_sort_method
 import com.vincentcarrier.filmtastic.R.id.sign_in
@@ -115,7 +115,7 @@ class MovieGridActivity : LifecycleActivity(), AnkoLogger {
 		return "${getString(string.sorted_by)} : ${getString(vm.sortMethod.stringResource)}"
 	}
 
-	private fun app() = application as Filmtastic
+	private fun app() = application as FilmtasticApp
 
 	inner class MovieAdapter : RecyclerView.Adapter<MovieAdapter.PosterViewHolder>() {
 
