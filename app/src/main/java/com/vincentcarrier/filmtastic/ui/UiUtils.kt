@@ -6,7 +6,7 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withC
 import com.trello.rxlifecycle2.android.lifecycle.kotlin.bindToLifecycle
 import com.vincentcarrier.filmtastic.GlideApp
 import com.vincentcarrier.filmtastic.R
-import com.vincentcarrier.filmtastic.pojos.Movie
+import com.vincentcarrier.filmtastic.models.Movie
 import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.rxkotlin.subscribeBy

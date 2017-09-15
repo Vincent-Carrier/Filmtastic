@@ -1,11 +1,11 @@
-package com.vincentcarrier.filmtastic.pojos
+package com.vincentcarrier.filmtastic.models
 
 import android.os.Parcel
 import com.google.gson.annotations.SerializedName
 import paperparcel.PaperParcel
 import paperparcel.PaperParcelable
 
-class TopMoviesResponse(@SerializedName("results") val results: List<Movie>)
+class MoviesResponse(@SerializedName("results") val results: List<Movie>)
 
 @PaperParcel
 data class Movie(@SerializedName("id") val id: Int,
@@ -17,7 +17,6 @@ data class Movie(@SerializedName("id") val id: Int,
 	companion object {
 		@JvmField
 		val CREATOR = PaperParcelMovie.CREATOR
-
 	}
 
 	override fun describeContents() = 0

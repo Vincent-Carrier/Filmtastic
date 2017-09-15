@@ -1,4 +1,4 @@
-package com.vincentcarrier.filmtastic.pojos
+package com.vincentcarrier.filmtastic.models
 
 import android.support.annotation.StringRes
 import com.vincentcarrier.filmtastic.R

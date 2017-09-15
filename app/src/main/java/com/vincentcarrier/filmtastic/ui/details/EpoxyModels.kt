@@ -6,8 +6,8 @@ import com.airbnb.epoxy.EpoxyAttribute
 import com.airbnb.epoxy.EpoxyModel
 import com.airbnb.epoxy.EpoxyModelClass
 import com.vincentcarrier.filmtastic.R
-import com.vincentcarrier.filmtastic.pojos.Movie
-import com.vincentcarrier.filmtastic.pojos.Trailer
+import com.vincentcarrier.filmtastic.models.Movie
+import com.vincentcarrier.filmtastic.models.Trailer
 import com.vincentcarrier.filmtastic.ui.loadPoster
 import kotlinx.android.synthetic.main.movie_details.view.*
 import kotlinx.android.synthetic.main.trailer_list_item.view.*

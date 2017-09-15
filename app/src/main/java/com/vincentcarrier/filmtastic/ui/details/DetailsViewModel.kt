@@ -1,44 +1,36 @@
 package com.vincentcarrier.filmtastic.ui.details
 
-import android.app.Application
-import android.arch.lifecycle.AndroidViewModel
-import com.vincentcarrier.filmtastic.FilmtasticApp
-import com.vincentcarrier.filmtastic.TheMovieDbApi
-import com.vincentcarrier.filmtastic.pojos.*
+import android.arch.lifecycle.ViewModel
+import com.vincentcarrier.filmtastic.models.*
 import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers.mainThread
-import javax.inject.Inject
 
 
-class DetailsViewModel(app: Application) : AndroidViewModel(app) {
+class DetailsViewModel(private val trailersRepo: TrailersRepository,
+                       private val userRepo) : ViewModel() {
 
-	@Inject lateinit var api: TheMovieDbApi
 	internal var accountId: Int? = null
-
-	init {
-		FilmtasticApp.netComponent.inject(this)
-	}
 
 	lateinit internal var movie: Movie
 	internal var trailers: List<Trailer> = emptyList()
 
-	internal fun fetchMovieTrailers(): Single<List<Trailer>> {
-		return api.fetchMovieTrailers(movie.id)
+	internal fun requestMovieTrailers(): Single<List<Trailer>> {
+		return trailerRepo.requestMovieTrailers(movie.id)
 				.observeOn(mainThread())
 				.map(TrailersResponse::results)
 	}
 
 	internal fun addMovieToWatchList(movie: MovieRequest): Completable {
-		return api.addMovieToWatchList(movie, accountId!!, sessionId()!!)
+		return trailerRepo.postMovieToWatchList(movie, accountId!!, sessionId()!!)
 				.observeOn(mainThread())
 	}
 
-	internal fun fetchAccountId(): Single<Int> {
-		return api.fetchAccountDetails(sessionId()!!)
+	internal fun requestAccountId(): Single<Int> {
+		return trailerRepo.requestAccountDetails(sessionId()!!)
 				.observeOn(mainThread())
 				.map(AccountDetailsResponse::id)
 	}
 
-	private fun sessionId() = getApplication<FilmtasticApp>().retrieveSessionId()
+	private fun sessionId() {TODO()}
 }

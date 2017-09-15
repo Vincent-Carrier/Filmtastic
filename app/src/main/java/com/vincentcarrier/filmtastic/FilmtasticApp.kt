@@ -3,8 +3,8 @@ package com.vincentcarrier.filmtastic
 import android.app.Application
 import com.bumptech.glide.annotation.GlideModule
 import com.bumptech.glide.module.AppGlideModule
-import com.vincentcarrier.filmtastic.di.DaggerNetComponent
-import com.vincentcarrier.filmtastic.di.NetComponent
+import com.vincentcarrier.filmtastic.injection.DaggerNetComponent
+import com.vincentcarrier.filmtastic.injection.NetComponent
 
 
 class FilmtasticApp : Application() {

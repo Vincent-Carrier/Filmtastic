@@ -7,9 +7,9 @@ import com.airbnb.epoxy.Typed2EpoxyController
 import com.vincentcarrier.filmtastic.FilmtasticApp
 import com.vincentcarrier.filmtastic.R
 import com.vincentcarrier.filmtastic.R.string
-import com.vincentcarrier.filmtastic.pojos.Movie
-import com.vincentcarrier.filmtastic.pojos.MovieRequest
-import com.vincentcarrier.filmtastic.pojos.Trailer
+import com.vincentcarrier.filmtastic.models.Movie
+import com.vincentcarrier.filmtastic.models.MovieRequest
+import com.vincentcarrier.filmtastic.models.Trailer
 import com.vincentcarrier.filmtastic.ui.execute
 import kotlinx.android.synthetic.main.activity_details.*
 import kotlinx.android.synthetic.main.movie_details.*
@@ -22,7 +22,7 @@ class DetailsActivity : LifecycleActivity(), AnkoLogger {
 	lateinit private var vm: DetailsViewModel
 
 	private val clickListener = {
-		if (vm.accountId == null) vm.fetchAccountId().execute(this@DetailsActivity) {
+		if (vm.accountId == null) vm.requestAccountId().execute(this@DetailsActivity) {
 			vm.accountId = it
 			addMovieToWatchlist()
 		} else addMovieToWatchlist()
@@ -37,7 +37,7 @@ class DetailsActivity : LifecycleActivity(), AnkoLogger {
 		val controller = DetailsController(vm.movie)
 		movieDetailsRecyclerView.adapter = controller.adapter
 
-		vm.fetchMovieTrailers().execute(this) {
+		vm.requestMovieTrailers().execute(this) {
 			vm.trailers = it
 			controller.setData(vm.movie, vm.trailers)
 		}
