@@ -13,7 +13,7 @@ import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.RecyclerView.ViewHolder
 import android.view.*
 import android.view.View.DRAWING_CACHE_QUALITY_HIGH
-import com.vincentcarrier.filmtastic.Filmtastic
+import com.vincentcarrier.filmtastic.FilmtasticApp
 import com.vincentcarrier.filmtastic.R
 import com.vincentcarrier.filmtastic.R.id.change_sort_method
 import com.vincentcarrier.filmtastic.R.id.sign_in
@@ -45,7 +45,7 @@ class MovieGridActivity : LifecycleActivity(), AnkoLogger {
 		if (!app().isLoggedIn()) {
 			// Warm up the in-app browser to reduce loading time
 			CustomTabsClient.connectAndInitialize(this, "com.android.chrome")
-			vm.fetchSessionId()?.execute(this) {
+			vm.requestSessionId()?.execute(this) {
 				app().storeSessionId(it)
 				invalidateOptionsMenu()
 			}
@@ -73,13 +73,13 @@ class MovieGridActivity : LifecycleActivity(), AnkoLogger {
 				fetchAndBindMovies()
 			}
 			sign_in -> {
-				vm.fetchRequestToken().execute(this) {
+				vm.requestRequestToken().execute(this) {
 					vm.requestToken = it
 					val browser = CustomTabsIntent.Builder()
 							.setToolbarColor(ContextCompat.getColor(this, R.color.chromeToolbar))
 							.build()
-					val BASE_URL = "https://www.themoviedb.org/authenticate/"
-					browser.launchUrl(this, Uri.parse(BASE_URL + it))
+					val LOGIN_URL = "https://www.themoviedb.org/authenticate/"
+					browser.launchUrl(this, Uri.parse(LOGIN_URL + it))
 				}
 			}
 		}
@@ -115,7 +115,7 @@ class MovieGridActivity : LifecycleActivity(), AnkoLogger {
 		return "${getString(string.sorted_by)} : ${getString(vm.sortMethod.stringResource)}"
 	}
 
-	private fun app() = application as Filmtastic
+	private fun app() = application as FilmtasticApp
 
 	inner class MovieAdapter : RecyclerView.Adapter<MovieAdapter.PosterViewHolder>() {
 

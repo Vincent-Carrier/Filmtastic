@@ -1,7 +1,10 @@
-package com.vincentcarrier.filmtastic.di
+package com.vincentcarrier.filmtastic.injection
 
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
-import com.vincentcarrier.filmtastic.TheMovieDbApi
+import com.vincentcarrier.filmtastic.data.MovieRepository
+import com.vincentcarrier.filmtastic.data.Repository
+import com.vincentcarrier.filmtastic.data.TheMovieDbService
+import dagger.Component
 import dagger.Module
 import dagger.Provides
 import io.reactivex.schedulers.Schedulers
@@ -15,8 +18,8 @@ class NetModule {
 
 	@Provides
 	@Singleton
-	fun provideTheMovieDbApi(retrofit: Retrofit): TheMovieDbApi {
-		return retrofit.create<TheMovieDbApi>(TheMovieDbApi::class.java)
+	fun provideTheMovieDbApi(retrofit: Retrofit): TheMovieDbService {
+		return retrofit.create<TheMovieDbService>(TheMovieDbService::class.java)
 	}
 
 	@Provides
@@ -37,13 +40,19 @@ class NetModule {
 		 * from GitHub, you must replace the API_KEY constant with your own API key,
 		 * which you can obtain from themoviedb.org */
 		return OkHttpClient.Builder()
-				.addInterceptor { chain ->
-					val original = chain.request()
-					val url = original.url().newBuilder().addQueryParameter("api_key", API_KEY).build()
-					val requestBuilder = original.newBuilder().url(url)
-					val request = requestBuilder.build()
-					chain.proceed(request)
-				}
-				.build()
+				.addInterceptor({
+					val request = it.request().newBuilder().addHeader("api_key", API_KEY).build()
+					it.proceed(request)
+				}).build()
 	}
+}
+
+@Singleton
+@Component(modules = arrayOf(NetModule::class))
+interface NetComponent {
+	fun inject(repository: MovieRepository)
+	fun inject(respository: Repository)
+//	fun inject(repository: TrailerRepository)
+
+//	val client: OkHttpClient
 }
