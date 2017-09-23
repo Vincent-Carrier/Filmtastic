@@ -1,71 +1,79 @@
 package com.vincentcarrier.filmtastic.ui.details
 
-import android.arch.lifecycle.LifecycleActivity
+import android.annotation.SuppressLint
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
-import com.airbnb.epoxy.Typed2EpoxyController
-import com.vincentcarrier.filmtastic.FilmtasticApp
+import android.support.constraint.ConstraintLayout
+import android.support.v7.app.AppCompatActivity
+import com.airbnb.epoxy.EpoxyAttribute
+import com.airbnb.epoxy.EpoxyModel
+import com.airbnb.epoxy.EpoxyModelClass
 import com.vincentcarrier.filmtastic.R
 import com.vincentcarrier.filmtastic.R.string
+import com.vincentcarrier.filmtastic.data.TrailersManager
+import com.vincentcarrier.filmtastic.data.WatchlistManager
 import com.vincentcarrier.filmtastic.models.Movie
-import com.vincentcarrier.filmtastic.models.MovieRequest
 import com.vincentcarrier.filmtastic.models.Trailer
-import com.vincentcarrier.filmtastic.ui.execute
+import com.vincentcarrier.filmtastic.ui.loadPoster
+import com.vincentcarrier.filmtastic.ui.subscribeWithLifecycle
 import kotlinx.android.synthetic.main.activity_details.*
 import kotlinx.android.synthetic.main.movie_details.*
+import kotlinx.android.synthetic.main.movie_details.view.*
+import kotlinx.android.synthetic.main.trailer_list_item.view.*
 import org.jetbrains.anko.AnkoLogger
+import org.jetbrains.anko.browse
 
 // TODO: Request the account ID in onStart()
 // TODO: Ask the server if the movie is in the watchlist instead of relying on cache
-class DetailsActivity : LifecycleActivity(), AnkoLogger {
+class DetailsActivity : AppCompatActivity(), AnkoLogger {
 
 	lateinit private var vm: DetailsViewModel
-
-	private val clickListener = {
-		if (vm.accountId == null) vm.requestAccountId().execute(this@DetailsActivity) {
-			vm.accountId = it
-			addMovieToWatchlist()
-		} else addMovieToWatchlist()
-	}
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 		setContentView(R.layout.activity_details)
-		vm = ViewModelProviders.of(this).get(DetailsViewModel::class.java)
+		vm = ViewModelProviders.of(this, DetailsVmFactory(WatchlistManager(),
+				TrailersManager())).get(DetailsViewModel::class.java)
 		vm.movie = intent.getParcelableExtra("movie")
+		movieDetailsRecyclerView.adapter = vm.adapter()
 
-		val controller = DetailsController(vm.movie)
-		movieDetailsRecyclerView.adapter = controller.adapter
-
-		vm.requestMovieTrailers().execute(this) {
-			vm.trailers = it
-			controller.setData(vm.movie, vm.trailers)
-		}
 	}
 
 
 	private fun addMovieToWatchlist() {
-		vm.addMovieToWatchList(MovieRequest(vm.movie.id)).execute(this) {
+		vm.addMovieToWatchList().subscribeWithLifecycle(this) {
 			addToWatchListButton.text = getString(string.added)
 			addToWatchListButton.alpha = 0.5f
 		}
 	}
+}
 
-	private fun isLoggedIn() = (application as FilmtasticApp).isLoggedIn()
+@EpoxyModelClass(layout = R.layout.trailer_list_item)
+abstract class TrailerModel(trailer: Trailer) : EpoxyModel<ConstraintLayout>() {
 
-	/* Airbnb's RecyclerView.Adapter replacement */
-	inner class DetailsController(movie: Movie) : Typed2EpoxyController<Movie, List<Trailer>>() {
-		private val detailsModel = DetailsModel_(movie)
-		internal var trailers = emptyList<Trailer>()
-			set(value) {
-				field = value
-				requestModelBuild()
-			}
+	@EpoxyAttribute var name: String = trailer.name
+	@EpoxyAttribute var key: String = trailer.key
 
-		override fun buildModels(movie: Movie, trailers: List<Trailer>) {
-			detailsModel.id("details").addTo(this)
-			for (trailer in trailers) TrailerModel_(trailer).id(trailer.key).addTo(this)
+	override fun bind(view: ConstraintLayout) {
+		with(view) {
+			trailerName.text = name
+			setOnClickListener { context.browse("https://www.youtube.com/watch?v=$key") }
 		}
 	}
 }
 
+@EpoxyModelClass(layout = R.layout.movie_details)
+abstract class DetailsModel(private val movie: Movie) : EpoxyModel<ConstraintLayout>() {
+	@SuppressLint("SetTextI18n")
+	override fun bind(view: ConstraintLayout) {
+		with(view) {
+			detailsPoster.loadPoster(movie.posterPath)
+			detailsTitle.text = movie.title
+			year.text = movie.releaseDate?.substring(0, 4)
+			score.text = "${movie.voteAverage}/10"
+			synopsis.text = movie.overview
+//			addToWatchListButton.visibility = if (isLoggedIn()) VISIBLE else GONE
+//			addToWatchListButton.setOnClickListener { clickListener }
+		}
+	}
+}
