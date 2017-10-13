@@ -10,7 +10,7 @@ class InfiniteScrollListener(
 
 	private var previousTotal = 0
 	private var loading = true
-	private val VISIBLE_THRESHOLD = 4
+	private val visibleThreshold = 4
 	private var firstVisibleItem = 0
 	private var visibleItemCount = 0
 	private var totalItemCount = 0
@@ -30,7 +30,7 @@ class InfiniteScrollListener(
 				}
 			}
 			if (!loading && (totalItemCount - visibleItemCount)
-					<= (firstVisibleItem + VISIBLE_THRESHOLD)) {
+					<= (firstVisibleItem + visibleThreshold)) {
 				func()
 				loading = true
 			}

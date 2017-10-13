@@ -1,40 +1,35 @@
-package com.vincentcarrier.filmtastic.injection
+package com.vincentcarrier.filmtastic.data
 
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
-import com.vincentcarrier.filmtastic.data.MoviesManager
-import com.vincentcarrier.filmtastic.data.TheMovieDbApi
-import dagger.Component
-import dagger.Module
-import dagger.Provides
-import io.reactivex.schedulers.Schedulers
+import com.vincentcarrier.filmtastic.BuildConfig
+import io.reactivex.schedulers.Schedulers.io
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
+import okhttp3.logging.HttpLoggingInterceptor.Level.HEADERS
+import okhttp3.logging.HttpLoggingInterceptor.Level.NONE
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import javax.inject.Singleton
 
-@Module
-class NetModule {
+internal object Retrofit {
 
-	@Provides
-	@Singleton
-	fun provideTheMovieDbApi(retrofit: Retrofit): TheMovieDbApi {
+	internal val api by lazy {
+		theMovieDbApi(retrofit(okHttpClient()))
+	}
+
+	private fun theMovieDbApi(retrofit: Retrofit): TheMovieDbApi {
 		return retrofit.create<TheMovieDbApi>(TheMovieDbApi::class.java)
 	}
 
-	@Provides
-	@Singleton
-	fun provideRetrofit(client: OkHttpClient): Retrofit {
+	private fun retrofit(client: OkHttpClient): Retrofit {
 		return Retrofit.Builder()
 				.client(client)
 				.baseUrl("http://api.themoviedb.org/3/")
 				.addConverterFactory(GsonConverterFactory.create())
-				.addCallAdapterFactory(RxJava2CallAdapterFactory.createWithScheduler(Schedulers.io()))
+				.addCallAdapterFactory(RxJava2CallAdapterFactory.createWithScheduler(io()))
 				.build()
 	}
 
-	@Provides
-	@Singleton
-	fun provideOkHttpClient(): OkHttpClient {
+	private fun okHttpClient(): OkHttpClient {
 		/** Append the API key to every Retrofit request. If you downloaded this project
 		 * from GitHub, you must replace the API_KEY constant with your own API key,
 		 * which you can obtain from themoviedb.org */
@@ -45,15 +40,9 @@ class NetModule {
 					val request = original.newBuilder().url(url).build()
 					chain.proceed(request)
 				}
+				.addInterceptor(HttpLoggingInterceptor().apply {
+					level = if (BuildConfig.DEBUG) HEADERS else NONE
+				})
 				.build()
 	}
-}
-
-@Singleton
-@Component(modules = arrayOf(NetModule::class))
-interface NetComponent {
-	fun inject(manager: MoviesManager)
-//	fun inject(manager: TrailerRepository)
-
-//	val client: OkHttpClient
 }

@@ -16,7 +16,7 @@ interface TheMovieDbApi {
 	@GET("movie/{movie_id}/videos")
 	fun requestMovieTrailers(@Path("movie_id") movieId: Int): Single<TrailersResponse>
 
-	/* To log in to TheMovieDb, you must first request a request token, then go to
+	/* To log in to TheMovieDb, you must first request a request token, then navigate to
 	* /authenticate/{REQUEST_TOKEN} and authorize the app. Finally, one must call
 	*  /authentication/session/new?api_key={API_KEY}&request_token={REQUEST_TOKEN} and
 	*  store the session_id you get as a response. Use the Session ID as a parameter
