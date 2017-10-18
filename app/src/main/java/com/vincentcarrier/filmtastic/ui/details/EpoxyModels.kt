@@ -2,10 +2,14 @@ package com.vincentcarrier.filmtastic.ui.details
 
 import android.annotation.SuppressLint
 import android.support.constraint.ConstraintLayout
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import com.airbnb.epoxy.EpoxyAttribute
+import com.airbnb.epoxy.EpoxyAttribute.Option.DoNotHash
 import com.airbnb.epoxy.EpoxyModel
 import com.airbnb.epoxy.EpoxyModelClass
 import com.vincentcarrier.filmtastic.R
+import com.vincentcarrier.filmtastic.data.UserCredentials
 import com.vincentcarrier.filmtastic.ui.loadPoster
 import kotlinx.android.synthetic.main.movie_details.view.*
 import kotlinx.android.synthetic.main.trailer_list_item.view.*
@@ -33,6 +37,7 @@ abstract class HeaderViewModel : EpoxyModel<ConstraintLayout>() {
 	@EpoxyAttribute var releaseDate = ""
 	@EpoxyAttribute var voteAverage = ""
 	@EpoxyAttribute var overview = ""
+	@EpoxyAttribute(DoNotHash) var clickListener: () -> Unit = { }
 
 	@SuppressLint("SetTextI18n")
 	override fun bind(view: ConstraintLayout) {
@@ -42,8 +47,8 @@ abstract class HeaderViewModel : EpoxyModel<ConstraintLayout>() {
 			year.text = releaseDate
 			score.text = voteAverage
 			synopsis.text = overview
-//			addToWatchListButton.visibility = if (isLoggedIn()) VISIBLE else GONE
-//			addToWatchListButton.setOnClickListener { clickListener }
+			addToWatchListButton.visibility = if (UserCredentials.isLoggedIn()) VISIBLE else GONE
+			addToWatchListButton.setOnClickListener { clickListener }
 		}
 	}
 }

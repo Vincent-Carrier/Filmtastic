@@ -6,17 +6,17 @@ import android.support.v7.app.AppCompatActivity
 import com.trello.rxlifecycle2.android.lifecycle.kotlin.bindToLifecycle
 import com.vincentcarrier.filmtastic.R
 import com.vincentcarrier.filmtastic.R.string
+import com.vincentcarrier.filmtastic.data.TheMovieDbService
 import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.activity_details.*
 import kotlinx.android.synthetic.main.movie_details.*
 import org.jetbrains.anko.AnkoLogger
 
-// TODO: Request the account ID in onStart()
-// TODO: Ask the server if the movie is in the watchlist instead of relying on cache
 class DetailsActivity : AppCompatActivity(), AnkoLogger {
 
 	private val vm: DetailsViewModel by lazy {
-		ViewModelProviders.of(this).get(DetailsViewModel::class.java)
+		ViewModelProviders.of(this, DetailsVmFactory(TheMovieDbService()))
+				.get(DetailsViewModel::class.java)
 	}
 
 	override fun onCreate(savedInstanceState: Bundle?) {

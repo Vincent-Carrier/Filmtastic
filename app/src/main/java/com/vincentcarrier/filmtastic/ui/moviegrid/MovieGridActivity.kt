@@ -2,11 +2,8 @@ package com.vincentcarrier.filmtastic.ui.moviegrid
 
 import android.arch.lifecycle.ViewModelProviders
 import android.content.res.Configuration.ORIENTATION_PORTRAIT
-import android.net.Uri
 import android.os.Bundle
 import android.support.customtabs.CustomTabsClient
-import android.support.customtabs.CustomTabsIntent
-import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.GridLayoutManager
 import android.view.Menu
@@ -17,7 +14,8 @@ import com.vincentcarrier.filmtastic.R
 import com.vincentcarrier.filmtastic.R.id.change_sort_method
 import com.vincentcarrier.filmtastic.R.id.sign_in
 import com.vincentcarrier.filmtastic.R.string
-import com.vincentcarrier.filmtastic.data.UserRepository
+import com.vincentcarrier.filmtastic.data.TheMovieDbService
+import com.vincentcarrier.filmtastic.data.UserCredentials
 import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.activity_movie_grid.*
 import org.jetbrains.anko.AnkoLogger
@@ -25,7 +23,8 @@ import org.jetbrains.anko.AnkoLogger
 class MovieGridActivity : AppCompatActivity(), AnkoLogger {
 
 	private val vm: MovieGridViewModel by lazy {
-		ViewModelProviders.of(this).get(MovieGridViewModel::class.java)
+		ViewModelProviders.of(this, MovieGridVmFactory(TheMovieDbService()))
+				.get(MovieGridViewModel::class.java)
 	}
 
 	override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,12 +42,15 @@ class MovieGridActivity : AppCompatActivity(), AnkoLogger {
 
 	override fun onStart() {
 		super.onStart()
-		if (!UserRepository.isLoggedIn()) {
+		if (!UserCredentials.isLoggedIn()) {
 			// Warm up the in-app browser to reduce loading time
 			CustomTabsClient.connectAndInitialize(this, "com.android.chrome")
-			UserRepository.requestSessionId()
-					.bindToLifecycle(this)
-					.subscribeBy()
+
+			// If the user has just closed the login tab, try to get a session ID
+			// TODO: Make this more explicit with a deep-link Intent
+//			TheMovieDbService.requestSessionId()
+//					.bindToLifecycle(this)
+//					.subscribeBy()
 		}
 	}
 
@@ -59,7 +61,7 @@ class MovieGridActivity : AppCompatActivity(), AnkoLogger {
 	}
 
 	override fun onPrepareOptionsMenu(menu: Menu): Boolean {
-		menu.findItem(change_sort_method).title = "${getString(string.sorted_by)} : ${getString(vm.sortMethod())}"
+		menu.findItem(change_sort_method).title = "${getString(string.sorted_by)} : ${getString(vm.sortMethodName())}"
 		menu.findItem(sign_in).isVisible = true
 		return super.onPrepareOptionsMenu(menu)
 	}
@@ -82,15 +84,15 @@ class MovieGridActivity : AppCompatActivity(), AnkoLogger {
 	}
 
 	private fun signIn() {
-		UserRepository.requestRequestToken()
-				.bindToLifecycle(this)
-				.subscribeBy(onSuccess = {
-					val browser = CustomTabsIntent.Builder()
-							.setToolbarColor(ContextCompat.getColor(this, R.color.chromeToolbar))
-							.build()
-					val loginUrl = "https://www.themoviedb.org/authenticate/"
-					browser.launchUrl(this, Uri.parse(loginUrl + it))
-				})
+//		TheMovieDbService.requestRequestToken()
+//				.bindToLifecycle(this)
+//				.subscribeBy(onSuccess = {
+//					val browser = CustomTabsIntent.Builder()
+//							.setToolbarColor(ContextCompat.getColor(this, R.color.chromeToolbar))
+//							.build()
+//					val loginUrl = "https://www.themoviedb.org/authenticate/"
+//					browser.launchUrl(this, Uri.parse(loginUrl + it))
+//				})
 	}
 
 	private fun setUpMovieGrid() {

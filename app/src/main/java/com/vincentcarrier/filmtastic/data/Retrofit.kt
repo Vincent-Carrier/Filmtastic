@@ -5,16 +5,14 @@ import com.vincentcarrier.filmtastic.BuildConfig
 import io.reactivex.schedulers.Schedulers.io
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
-import okhttp3.logging.HttpLoggingInterceptor.Level.HEADERS
+import okhttp3.logging.HttpLoggingInterceptor.Level.BASIC
 import okhttp3.logging.HttpLoggingInterceptor.Level.NONE
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 internal object Retrofit {
 
-	internal val api by lazy {
-		theMovieDbApi(retrofit(okHttpClient()))
-	}
+	internal val api = theMovieDbApi(retrofit(okHttpClient()))
 
 	private fun theMovieDbApi(retrofit: Retrofit): TheMovieDbApi {
 		return retrofit.create<TheMovieDbApi>(TheMovieDbApi::class.java)
@@ -41,7 +39,7 @@ internal object Retrofit {
 					chain.proceed(request)
 				}
 				.addInterceptor(HttpLoggingInterceptor().apply {
-					level = if (BuildConfig.DEBUG) HEADERS else NONE
+					level = if (BuildConfig.DEBUG) BASIC else NONE
 				})
 				.build()
 	}

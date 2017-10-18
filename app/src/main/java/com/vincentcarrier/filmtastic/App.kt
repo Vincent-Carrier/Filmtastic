@@ -10,13 +10,13 @@ import org.jetbrains.anko.warn
 
 class App : Application(), AnkoLogger {
 
-	init {
-		app = this
-	}
-
 	companion object {
 		private lateinit var app: App
 		fun sharedPrefs(): SharedPreferences = app.getSharedPreferences("prefs", MODE_PRIVATE)
+	}
+
+	init {
+		app = this
 	}
 
 	override fun onCreate() {
